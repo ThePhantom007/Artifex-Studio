@@ -5,8 +5,7 @@ tools — image enhancement, background removal, style transfer, and panoramic
 stitching — served through a polished web interface and powered by your own
 RTX GPU.
 
-![ArtifexStudio Interface](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/529cba76-7c52-4628-a862-4b2139b51800" />
-)
+![ArtifexStudio Interface](<img width="1918" height="995" alt="Screenshot 2026-03-05 224451" src="https://github.com/user-attachments/assets/2a1f8c4d-bc25-4d4a-a82e-3925e8fcfd56" />)
 
 ---
 
