@@ -5,7 +5,7 @@ tools — image enhancement, background removal, style transfer, and panoramic
 stitching — served through a polished web interface and powered by your own
 RTX GPU.
 
-ArtifexStudio Interface
+#### ArtifexStudio Interface
 <img width="1918" height="995" alt="Screenshot 2026-03-05 224451" src="https://github.com/user-attachments/assets/5052ff30-a5ba-484a-8d00-3e7159ee36c7" />
 
 ---
@@ -17,8 +17,8 @@ Rescue blurry, noisy, or heavily compressed photos. Real-ESRGAN reconstructs
 lost texture and detail at 4× native resolution using 23 residual blocks of
 deep learning inference.
 
-![Crystal Clarity Demo](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/f97c80af-bba6-4fbd-8713-02d68f9a4283" />
-)
+#### Crystal Clarity Demo
+<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/f97c80af-bba6-4fbd-8713-02d68f9a4283" />
 
 ---
 
@@ -27,8 +27,8 @@ Two AI systems in one. RMBG-2.0 performs neural matting with pixel-perfect
 edges down to individual hair strands. LaMa reconstructs the background
 seamlessly as if the object never existed.
 
-![Magic Eraser Demo](<img width="1918" height="993" alt="image" src="https://github.com/user-attachments/assets/7eb52f41-4a3a-4eda-b62d-0b95d4c25d69" />
-)
+#### Magic Eraser Demo
+<img width="1918" height="993" alt="image" src="https://github.com/user-attachments/assets/7eb52f41-4a3a-4eda-b62d-0b95d4c25d69" />
 
 ---
 
@@ -37,8 +37,8 @@ IP-Adapter injects the visual language of any reference artwork directly into
 SDXL's cross-attention layers. Upload a photo and a painting — the AI repaints
 your scene in that style while preserving your original composition.
 
-![Artistic Vision Demo](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/62de8d75-9f75-4439-9b15-b827265e8437" />
-)
+#### Artistic Vision Demo
+<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/62de8d75-9f75-4439-9b15-b827265e8437" />
 
 ---
 
@@ -47,8 +47,8 @@ SIFT keypoint detection, homography warping, histogram exposure matching, and
 multiband seam blending — fused into a single drag-and-drop tool that produces
 seamless widescreen panoramas with automatic black-border cropping.
 
-![Deep Stitch Demo](<img width="1918" height="992" alt="image" src="https://github.com/user-attachments/assets/b0145e14-ab6e-4832-8be8-f89b16e995ea" />
-)
+#### Deep Stitch Demo
+<img width="1918" height="992" alt="image" src="https://github.com/user-attachments/assets/b0145e14-ab6e-4832-8be8-f89b16e995ea" />
 
 ---
 
