@@ -1,0 +1,78 @@
+# ─── Secrets ──────────────────────────────────────────────────────
+.env
+*.key
+*.pem
+*.p12
+secrets/
+
+# ─── Python ───────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+env/
+venv/
+.venv/
+ENV/
+pip-wheel-metadata/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ─── Docker ───────────────────────────────────────────────────────
+# Don't commit built image tarballs or override files
+docker-compose.override.yml
+*.tar
+
+# ─── Model weights & AI caches ────────────────────────────────────
+# These are large binary files — downloaded automatically at runtime
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.bin
+weights/
+checkpoints/
+.cache/
+worker/.cache/
+
+# ─── Generated images (output data) ───────────────────────────────
+# The /data volume contents should never be committed
+data/
+*.output.png
+*.output.jpg
+
+# ─── IDEs ─────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── OS ───────────────────────────────────────────────────────────
+.AppleDouble
+.LSOverride
+desktop.ini
+$RECYCLE.BIN/
+
+# ─── Logs ─────────────────────────────────────────────────────────
+*.log
+logs/
+celerybeat-schedule
+celerybeat.pid
+
+# ─── Node (if any tooling is added later) ─────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

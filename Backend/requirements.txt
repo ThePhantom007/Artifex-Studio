@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+uvloop
+redis
+celery
+python-multipart
+aiofiles
+requests
+python-dotenv

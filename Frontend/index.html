@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artifex Studio — AI-Powered Creative Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- NAV -->
+  <nav class="glass-nav w-full px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+    <button onclick="switchTab('enhance')" class="flex items-center gap-2 cursor-pointer bg-transparent border-none">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <circle cx="13" cy="13" r="12" fill="url(#lg)"/>
+        <path d="M8 13l3.5 3.5L18 9" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="26" y2="26"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+      </svg>
+      <span class="logo-mark">ArtifexStudio</span>
+    </button>
+
+    <div class="flex items-center gap-1 overflow-x-auto">
+      <button onclick="switchTab('enhance')" id="nav-enhance" class="nav-link active flex items-center gap-1.5"><span>🔬</span> Crystal Clarity</button>
+      <button onclick="switchTab('edit')"    id="nav-edit"    class="nav-link flex items-center gap-1.5"><span>✂️</span> Magic Eraser</button>
+      <button onclick="switchTab('style')"   id="nav-style"   class="nav-link flex items-center gap-1.5"><span>🎨</span> Artistic Vision</button>
+      <button onclick="switchTab('stitch')"  id="nav-stitch"  class="nav-link flex items-center gap-1.5"><span>🌅</span> Deep Stitch</button>
+    </div>
+
+    <div class="rtx-badge hidden md:inline-flex"><div class="rtx-dot"></div>RTX 5060 Live</div>
+  </nav>
+
+  <main class="page-main flex-grow w-full max-w-5xl mx-auto px-5 pt-14 pb-24">
+
+
+    <!-- ══ TAB 1: CRYSTAL CLARITY ══ -->
+    <section id="sec-enhance" class="tab-content">
+      <div class="text-center mb-14">
+        <div class="section-eyebrow mx-auto w-fit mb-5"><span>⚡</span> Powered by Real-ESRGAN x4plus</div>
+        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl mb-5">Restore<br><span class="gradient-span">Lost Detail</span></h1>
+        <p class="hero-body mx-auto mb-8">
+          Your GPU reconstructs every pixel from first principles — recovering microscopic texture,
+          optical focus, and true colour from blurry, noisy, or compressed originals.
+          Not sharpening. <em>Reconstruction.</em>
+        </p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="tech-pill">🔬 Real-ESRGAN x4plus</span>
+          <span class="tech-pill">📐 4× Upscaling</span>
+          <span class="tech-pill">🌫️ Blur & Noise Removal</span>
+          <span class="tech-pill">📸 JPEG Artefact Repair</span>
+          <span class="tech-pill">⚡ FP16 Tensor Cores</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-14">
+        <div class="stat-card"><div class="stat-value">4×</div><div class="stat-label">Upscale</div></div>
+        <div class="stat-card"><div class="stat-value">23L</div><div class="stat-label">RRDB Blocks</div></div>
+        <div class="stat-card"><div class="stat-value">FP16</div><div class="stat-label">Precision</div></div>
+      </div>
+
+      <div class="mb-14 max-w-4xl mx-auto">
+        <div class="divider-label">— Drag the Handle to Compare —</div>
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <img-comparison-slider class="w-full focus:outline-none cursor-ew-resize">
+            <img slot="first"  src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=60&auto=format&fit=crop" style="filter:blur(5px) brightness(0.82) saturate(0.6);width:100%;height:400px;object-fit:cover" />
+            <img slot="second" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=90&auto=format&fit=crop" style="width:100%;height:400px;object-fit:cover" />
+            <div slot="handle" class="slider-handle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M8 9l4-4 4 4M8 15l4 4 4-4" transform="rotate(90 12 12)"/></svg></div>
+          </img-comparison-slider>
+        </div>
+        <div class="slider-caption">
+          <span class="text-slate-600 font-semibold text-xs">◀ Degraded Original</span>
+          <span class="text-blue-400 font-semibold text-xs">AI Enhanced — Real-ESRGAN ▶</span>
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto mb-14">
+        <div class="divider-label">— How It Works —</div>
+        <div class="steps-row">
+          <div class="step"><div class="step-num">01</div><div class="step-title">Upload Image</div><div class="step-desc">Any blurry, noisy, or low-res photo. JPG, PNG, WebP.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">02</div><div class="step-title">RRDB Reconstruction</div><div class="step-desc">23 residual blocks hallucinate fine texture at native 4× scale.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">03</div><div class="step-title">Download HD PNG</div><div class="step-desc">Four times the resolution. Every detail intact.</div></div>
+        </div>
+      </div>
+
+      <div class="action-card p-8 max-w-2xl mx-auto">
+        <div id="ui-enhance-upload">
+          <div class="dropzone mb-4">
+            <input type="file" id="file-enhance" accept="image/*" />
+            <div class="dropzone-inner">
+              <div class="dropzone-icon">🔍</div>
+              <div class="dropzone-title">Drop your blurry image here</div>
+              <div class="dropzone-sub mt-1">or click to browse · JPG, PNG, WebP</div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 text-center">Processing begins automatically on upload.</p>
+        </div>
+
+        <div id="ui-enhance-loading" class="hidden flex-col items-center py-12 text-center">
+          <div class="spinner-wrap"><div class="spinner-track"></div><div class="spinner-arc"></div><div class="spinner-arc spinner-arc-2"></div><div class="spinner-icon">✨</div></div>
+          <h3 class="text-xl font-bold text-slate-700">Reconstructing Pixels…</h3>
+          <p class="text-slate-400 text-sm mt-1">Real-ESRGAN is running inference on your RTX 5060.</p>
+          <p id="enhance-loading-msg" class="loading-msg"></p>
+        </div>
+
+        <div id="ui-enhance-result" class="hidden flex-col items-center w-full">
+          <div class="result-img-wrap w-full mb-5">
+            <img-comparison-slider class="w-full focus:outline-none">
+              <img slot="first"  id="enhance-orig" class="w-full h-auto object-contain" />
+              <img slot="second" id="enhance-res"  class="w-full h-auto object-contain" />
+              <div slot="handle" class="slider-handle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M8 9l4-4 4 4M8 15l4 4 4-4" transform="rotate(90 12 12)"/></svg></div>
+            </img-comparison-slider>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">← Drag to compare original vs. enhanced</p>
+          <div class="flex gap-3 flex-wrap justify-center">
+            <button onclick="resetEnhance()" class="btn-ghost">↺ Enhance Another</button>
+            <button id="enhance-download" class="btn-download">⬇ Download HD Result</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══ TAB 2: MAGIC ERASER ══ -->
+    <section id="sec-edit" class="tab-content hidden">
+      <div class="text-center mb-14">
+        <div class="section-eyebrow mx-auto w-fit mb-5"><span>✂️</span> RMBG-2.0 + LaMa Inpainting</div>
+        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl mb-5">Remove<br><span class="gradient-span">Anything</span></h1>
+        <p class="hero-body mx-auto mb-8">
+          Two AI systems work in tandem. RMBG-2.0 performs neural matting with atomic-precision
+          edges — down to individual hair strands. LaMa models long-range spatial context
+          to reconstruct background as if the object <em>never existed</em>.
+        </p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="tech-pill">🎯 RMBG-2.0 Neural Matting</span>
+          <span class="tech-pill">🖌️ LaMa Background Reconstruction</span>
+          <span class="tech-pill">💎 Hair & Fur Precision</span>
+          <span class="tech-pill">🌐 RGBA Transparency Output</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-14">
+        <div class="stat-card"><div class="stat-value">2.0</div><div class="stat-label">RMBG Version</div></div>
+        <div class="stat-card"><div class="stat-value">LaMa</div><div class="stat-label">Erase Model</div></div>
+        <div class="stat-card"><div class="stat-value">RGBA</div><div class="stat-label">Output</div></div>
+      </div>
+
+      <div class="mb-14">
+        <div class="divider-label">— Example Results —</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="glass-card">
+            <div class="grid grid-cols-2" style="height:220px">
+              <div class="overflow-hidden"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80&auto=format&fit=crop" class="w-full h-full object-cover" alt="Before" /></div>
+              <div class="checkerboard overflow-hidden flex items-center justify-center"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=90&auto=format&fit=crop" class="w-full h-full object-cover" style="mix-blend-mode:multiply;opacity:0.9" alt="After" /></div>
+            </div>
+            <div class="example-caption flex justify-between"><span>✂️ Background Removal · RMBG-2.0</span><span class="text-blue-400">Before → After</span></div>
+          </div>
+          <div class="glass-card overflow-hidden">
+            <img-comparison-slider class="w-full focus:outline-none cursor-ew-resize" style="height:220px;display:block">
+              <img slot="first"  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=80&auto=format&fit=crop" style="width:100%;height:220px;object-fit:cover" />
+              <img slot="second" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=90&auto=format&fit=crop" style="width:100%;height:220px;object-fit:cover;filter:brightness(1.04) saturate(0.9)" />
+              <div slot="handle" class="slider-handle" style="transform:scale(0.78)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M8 9l4-4 4 4M8 15l4 4 4-4" transform="rotate(90 12 12)"/></svg></div>
+            </img-comparison-slider>
+            <div class="example-caption flex justify-between"><span>🖌️ Generative Erase · LaMa</span><span class="text-blue-400">Drag to compare</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto mb-14">
+        <div class="divider-label">— How It Works —</div>
+        <div class="steps-row">
+          <div class="step"><div class="step-num">01</div><div class="step-title">Upload Image</div><div class="step-desc">Your photo, any subject, any complexity.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">02</div><div class="step-title">Choose Action</div><div class="step-desc">Remove background or erase an object with a mask.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">03</div><div class="step-title">Perfect Result</div><div class="step-desc">Transparent PNG cutout or seamlessly reconstructed scene.</div></div>
+        </div>
+      </div>
+
+      <div class="action-card p-8 max-w-2xl mx-auto">
+        <div id="ui-edit-upload">
+          <div class="mb-5">
+            <label class="form-label">1. Upload your image</label>
+            <div class="file-upload-area">
+              <input type="file" id="file-edit-main" accept="image/*" />
+            </div>
+          </div>
+          <div class="mb-5">
+            <label class="form-label">2. Choose an action</label>
+            <select id="edit-action" class="styled-select" onchange="toggleMaskInput()">
+              <option value="remove_bg">✂️ Extract Subject — Remove Background</option>
+              <option value="erase">🖌️ Generative Erase — Remove an Object</option>
+            </select>
+          </div>
+          <div id="mask-container" class="hidden mb-5">
+            <label class="form-label">3. Upload mask image</label>
+            <div class="file-upload-area">
+              <input type="file" id="file-edit-mask" accept="image/*" />
+            </div>
+            <p class="form-hint">White = erase this area · Black = keep. Paint the object white in any image editor.</p>
+          </div>
+          <button onclick="submitEdit()" class="btn-primary">Cast Magic ✨</button>
+        </div>
+
+        <div id="ui-edit-loading" class="hidden flex-col items-center py-12 text-center">
+          <div class="spinner-wrap"><div class="spinner-track"></div><div class="spinner-arc" style="border-top-color:#a78bfa"></div><div class="spinner-arc spinner-arc-2" style="border-top-color:#ec4899"></div><div class="spinner-icon">✂️</div></div>
+          <h3 class="text-xl font-bold text-slate-700">Processing…</h3>
+          <p class="text-slate-400 text-sm mt-1">AI is analysing your image with neural precision matting.</p>
+          <p id="edit-loading-msg" class="loading-msg"></p>
+        </div>
+
+        <div id="ui-edit-result" class="hidden flex-col items-center text-center">
+          <div class="result-img-wrap checkerboard w-full mb-5 p-2">
+            <img id="edit-res" class="max-w-full h-auto rounded-xl mx-auto" alt="Edit result" />
+          </div>
+          <div class="flex gap-3 flex-wrap justify-center">
+            <button onclick="resetEdit()" class="btn-ghost">↺ Edit Another</button>
+            <button id="edit-download" class="btn-download">⬇ Download Result</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══ TAB 3: ARTISTIC VISION ══ -->
+    <section id="sec-style" class="tab-content hidden">
+      <div class="text-center mb-14">
+        <div class="section-eyebrow mx-auto w-fit mb-5"><span>🎨</span> SDXL + IP-Adapter Cross-Attention</div>
+        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl mb-5">Transfuse<br><span class="gradient-span">Any Style</span></h1>
+        <p class="hero-body mx-auto mb-8">
+          IP-Adapter injects style image features directly into SDXL's cross-attention layers.
+          The AI doesn't copy textures — it <em>reasons</em> about the visual language of your
+          reference and repaints your scene in that vocabulary. Text prompts provide additional
+          creative steering on top.
+        </p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="tech-pill">🧠 SDXL IP-Adapter</span>
+          <span class="tech-pill">👁 CLIP ViT-H Vision Encoder</span>
+          <span class="tech-pill">🎯 Cross-Attention Style Injection</span>
+          <span class="tech-pill">📝 Optional Text Prompt</span>
+          <span class="tech-pill">🖥 VAE Slicing (8GB-safe)</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-14">
+        <div class="stat-card"><div class="stat-value">SDXL</div><div class="stat-label">Base Model</div></div>
+        <div class="stat-card"><div class="stat-value">30</div><div class="stat-label">Denoise Steps</div></div>
+        <div class="stat-card"><div class="stat-value">0.7</div><div class="stat-label">Style Scale</div></div>
+      </div>
+
+      <div class="mb-14">
+        <div class="divider-label">— Style Transfer Examples —</div>
+        <div class="glass-card p-5 space-y-6">
+          <!-- Column headers -->
+          <div class="style-row">
+            <div class="style-col-label">Your Photo</div>
+            <div></div>
+            <div class="style-col-label">Style Reference</div>
+            <div></div>
+            <div class="style-col-label">AI Output</div>
+          </div>
+          <!-- Example 1 -->
+          <div class="style-row">
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80&auto=format&fit=crop&crop=faces" alt="Portrait"/></div>
+            <div class="style-arrow">→</div>
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80&auto=format&fit=crop" alt="Abstract art"/></div>
+            <div class="style-arrow">→</div>
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80&auto=format&fit=crop" alt="Result"/></div>
+          </div>
+          <div class="text-center text-xs text-slate-600 -mt-3">Portrait content + abstract reference → painterly composition</div>
+          <div class="border-t" style="border-color:rgba(255,255,255,0.06)"></div>
+          <!-- Example 2 -->
+          <div class="style-row">
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&q=80&auto=format&fit=crop" alt="Forest"/></div>
+            <div class="style-arrow">→</div>
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&q=80&auto=format&fit=crop" alt="Watercolour"/></div>
+            <div class="style-arrow">→</div>
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1468581264429-2548ef9eb732?w=400&q=80&auto=format&fit=crop" alt="Painted landscape"/></div>
+          </div>
+          <div class="text-center text-xs text-slate-600 -mt-3">Forest scene + watercolour reference → hand-painted rendering</div>
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto mb-14">
+        <div class="divider-label">— How It Works —</div>
+        <div class="steps-row">
+          <div class="step"><div class="step-num">01</div><div class="step-title">Upload Canvas</div><div class="step-desc">The scene whose composition you want to preserve.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">02</div><div class="step-title">Add Style Muse</div><div class="step-desc">Any artwork, painting, or photo whose look you love.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">03</div><div class="step-title">Generate</div><div class="step-desc">SDXL fuses both — your structure, their visual language.</div></div>
+        </div>
+      </div>
+
+      <div class="action-card p-8 max-w-2xl mx-auto">
+        <div id="ui-style-upload">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label class="form-label">1. Your Canvas (Content)</label>
+              <div class="file-upload-area">
+                <input type="file" id="file-style-content" accept="image/*" />
+              </div>
+              <p class="form-hint">The scene to repaint.</p>
+            </div>
+            <div>
+              <label class="form-label">2. Style Reference (Muse)</label>
+              <div class="file-upload-area">
+                <input type="file" id="file-style-reference" accept="image/*" />
+              </div>
+              <p class="form-hint">Artwork, painting, or any look you want.</p>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label class="form-label">3. Creative Direction <span class="text-slate-400 font-normal">(optional)</span></label>
+            <input type="text" id="style-prompt" class="styled-input" placeholder="e.g. oil painting, warm autumn tones, impressionist brush strokes…" />
+            <p class="form-hint">Leave empty to let the style image speak for itself.</p>
+          </div>
+          <button onclick="submitStyle()" class="btn-primary">Synthesise Masterpiece 🎨</button>
+        </div>
+
+        <div id="ui-style-loading" class="hidden flex-col items-center py-12 text-center">
+          <div class="spinner-wrap"><div class="spinner-track"></div><div class="spinner-arc" style="border-top-color:#f472b6"></div><div class="spinner-arc spinner-arc-2" style="border-top-color:#a78bfa"></div><div class="spinner-icon">🎨</div></div>
+          <h3 class="text-xl font-bold text-slate-700">Synthesising Artwork…</h3>
+          <p class="text-slate-400 text-sm mt-1">SDXL is running 30 denoising steps. Please wait.</p>
+          <p id="style-loading-msg" class="loading-msg"></p>
+        </div>
+
+        <div id="ui-style-result" class="hidden flex-col items-center text-center">
+          <div class="result-img-wrap w-full mb-5"><img id="style-res" class="w-full h-auto object-cover rounded-2xl" alt="Style result" /></div>
+          <div class="flex gap-3 flex-wrap justify-center">
+            <button onclick="resetStyle()" class="btn-ghost">↺ Create Another</button>
+            <button id="style-download" class="btn-download">⬇ Download Artwork</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══ TAB 4: DEEP STITCH ══ -->
+    <section id="sec-stitch" class="tab-content hidden">
+      <div class="text-center mb-14">
+        <div class="section-eyebrow mx-auto w-fit mb-5"><span>🌅</span> OpenCV Panorama + Histogram Matching</div>
+        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl mb-5">Infinite<br><span class="gradient-span">Horizons</span></h1>
+        <p class="hero-body mx-auto mb-8">
+          SIFT feature detection finds thousands of matching keypoints across your frames,
+          homography estimation warps each into a shared coordinate space, and histogram
+          matching eliminates every exposure difference before multiband blending
+          fuses the seams into <em>invisibility</em>.
+        </p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="tech-pill">🗺 SIFT Feature Detection</span>
+          <span class="tech-pill">📐 Homography Estimation</span>
+          <span class="tech-pill">🎨 Histogram Exposure Match</span>
+          <span class="tech-pill">🪡 Multiband Seam Blend</span>
+          <span class="tech-pill">✂️ Auto-Crop Black Borders</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-14">
+        <div class="stat-card"><div class="stat-value">∞</div><div class="stat-label">Images</div></div>
+        <div class="stat-card"><div class="stat-value">360°</div><div class="stat-label">Field of View</div></div>
+        <div class="stat-card"><div class="stat-value">4K</div><div class="stat-label">Output Ready</div></div>
+      </div>
+
+      <div class="mb-14">
+        <div class="divider-label">— Panorama Example —</div>
+        <div class="glass-card overflow-hidden mb-4">
+          <img
+            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=90&auto=format&fit=crop&ar=3:1"
+            class="w-full object-cover"
+            style="height: 270px; object-position: center;"
+            alt="Panoramic mountain landscape" />
+          <div class="example-caption">
+            🌅 Multiple exposures merged · Histogram-matched · Auto-cropped · Zero visible seams
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="glass-card overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&q=70&auto=format&fit=crop"
+              class="w-full object-cover" style="height:90px" />
+            <div class="example-caption">Frame 1</div>
+          </div>
+          <div class="glass-card overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1500534314209-a157a0f0a2d4?w=300&q=70&auto=format&fit=crop"
+              class="w-full object-cover" style="height:90px" />
+            <div class="example-caption">Frame 2 (overlapping)</div>
+          </div>
+          <div class="glass-card overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=300&q=70&auto=format&fit=crop"
+              class="w-full object-cover" style="height:90px" />
+            <div class="example-caption">Frame 3</div>
+          </div>
+        </div>
+        <p class="text-center text-xs text-slate-600 mt-3">
+          Ensure adjacent frames overlap by 20–30% for reliable keypoint matching.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto mb-14">
+        <div class="divider-label">— How It Works —</div>
+        <div class="steps-row">
+          <div class="step"><div class="step-num">01</div><div class="step-title">Upload Frames</div><div class="step-desc">2+ overlapping photos from the same viewpoint.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">02</div><div class="step-title">Align & Blend</div><div class="step-desc">Keypoints matched, warped, exposure-corrected, and seam-blended.</div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">03</div><div class="step-title">Download Panorama</div><div class="step-desc">Seamless widescreen PNG — auto-cropped, no black borders.</div></div>
+        </div>
+      </div>
+
+      <div class="action-card p-8 max-w-2xl mx-auto">
+        <div id="ui-stitch-upload">
+          <div class="dropzone mb-4">
+            <input type="file" id="file-stitch" accept="image/*" multiple />
+            <div class="dropzone-inner">
+              <div class="dropzone-icon">🌅</div>
+              <div class="dropzone-title">Drop 2 or more overlapping photos</div>
+              <div class="dropzone-sub mt-1">Hold Ctrl / ⌘ to select multiple files at once</div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 text-center">Tip: 20–30% overlap between adjacent frames gives best results.</p>
+        </div>
+
+        <div id="ui-stitch-loading" class="hidden flex-col items-center py-12 text-center">
+          <div class="spinner-wrap"><div class="spinner-track"></div><div class="spinner-arc" style="border-top-color:#34d399"></div><div class="spinner-arc spinner-arc-2" style="border-top-color:#06b6d4"></div><div class="spinner-icon">🧵</div></div>
+          <h3 class="text-xl font-bold text-slate-700">Stitching Panorama…</h3>
+          <p class="text-slate-400 text-sm mt-1">Matching keypoints, correcting exposure, blending seams.</p>
+          <p id="stitch-loading-msg" class="loading-msg"></p>
+        </div>
+
+        <div id="ui-stitch-result" class="hidden flex-col items-center">
+          <div class="result-img-wrap w-full mb-5"><img id="stitch-res" class="w-full object-contain rounded-2xl" alt="Panorama result" /></div>
+          <div class="flex gap-3 flex-wrap justify-center">
+            <button onclick="resetStitch()" class="btn-ghost">↺ Stitch Another</button>
+            <button id="stitch-download" class="btn-download">⬇ Download Panorama</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer py-8 px-6 text-center">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="footer-logo">ArtifexStudio</div>
+      <p class="text-xs opacity-60">Real-ESRGAN · RMBG-2.0 · LaMa · SDXL IP-Adapter · OpenCV · RTX 5060 Blackwell</p>
+      <p class="text-xs opacity-40">© 2026 Artifex Studio</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

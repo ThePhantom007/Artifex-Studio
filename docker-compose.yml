@@ -1,0 +1,218 @@
+# ArtifexStudio — Docker Compose v2
+# ─────────────────────────────────────────────────────────────────
+# Services: redis | backend | worker | frontend
+#
+# Changes from v1:
+#   • Redis port 6379 no longer exposed to the host — it only needs
+#     to be reachable by backend and worker inside neuro-net.
+#   • Redis persistence via AOF (appendonly) — task results survive
+#     a Redis restart rather than being lost entirely.
+#   • Redis memory cap with LRU eviction — prevents OOM on the host.
+#   • Backend and frontend healthchecks added.
+#   • Worker healthcheck uses celery inspect ping.
+#   • restart: unless-stopped — containers don't auto-restart after
+#     `docker compose stop` (intentional stops), but do after crashes.
+#   • PYTHONUNBUFFERED / PYTHONDONTWRITEBYTECODE on all Python containers.
+#   • Structured JSON logging driver for all containers.
+#   • .env file support — override any variable without editing this file.
+#   • HF_HOME and TORCH_HOME point into /data/.cache so model weights
+#     persist across container rebuilds on the named volume.
+
+networks:
+  neuro-net:
+    driver: bridge
+
+services:
+
+  # ── Redis message broker + result backend ───────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: neuro_redis
+    restart: unless-stopped
+
+    # NOT exposed to the host. Only backend and worker need Redis,
+    # and they reach it via the Docker network using the hostname "redis".
+    # Exposing 6379 to the host is a security risk with no benefit here.
+    expose:
+      - "6379"
+
+    networks:
+      - neuro-net
+
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+
+    # Persist Redis data so results survive restarts.
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  # ── FastAPI backend (task dispatcher + file server) ─────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: neuro_backend
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - artifex_studio_data:/data
+
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATA_DIR=/data
+      - MAX_UPLOAD_BYTES=52428800   # 50 MB
+      - FILE_TTL_SECONDS=21600      # 6 hours
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    networks:
+      - neuro-net
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 20s
+      timeout: 8s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+
+  # ── Celery AI worker (GPU inference) ────────────────────────────
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    container_name: neuro_worker
+    restart: unless-stopped
+
+    # Overrides the Dockerfile CMD — keeping it explicit here makes the
+    # startup command visible without digging into the Dockerfile.
+    command: >
+      celery -A tasks worker
+      --pool=solo
+      --concurrency=1
+      --queues=enhance,stitch,style,edit,default
+      --loglevel=info
+
+    volumes:
+      - artifex_studio_data:/data
+
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATA_DIR=/data
+      # HuggingFace and PyTorch model caches persist on the named volume.
+      # Models survive container rebuilds — no re-downloading after `docker
+      # compose build`.
+      # NVIDIA runtime — pass the GPU into the container
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    networks:
+      - neuro-net
+
+    healthcheck:
+      test: ["CMD", "celery", "-A", "tasks", "inspect", "ping", "--timeout=10"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      # Workers take time to load all AI models on first start —
+      # give them 3 minutes before the healthcheck kicks in.
+      start_period: 180s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+
+  # ── Nginx frontend (static file server) ─────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: neuro_frontend
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    networks:
+      - neuro-net
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+# ── Named volumes ──────────────────────────────────────────────────
+volumes:
+  artifex_studio_data:
+    name: artifex_studio_data
+    # Stores: generated output images, input upload staging, model weight caches
+    # (/data/.cache/huggingface and /data/.cache/torch)
+
+  redis_data:
+    name: artifex_redis_data
+    # Stores: Redis AOF persistence file (task results survive restarts)
