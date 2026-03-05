@@ -5,7 +5,8 @@ tools — image enhancement, background removal, style transfer, and panoramic
 stitching — served through a polished web interface and powered by your own
 RTX GPU.
 
-![ArtifexStudio Interface](docs/screenshot.png)
+![ArtifexStudio Interface](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/529cba76-7c52-4628-a862-4b2139b51800" />
+)
 
 ---
 
@@ -16,7 +17,8 @@ Rescue blurry, noisy, or heavily compressed photos. Real-ESRGAN reconstructs
 lost texture and detail at 4× native resolution using 23 residual blocks of
 deep learning inference.
 
-![Crystal Clarity Demo](docs/demo-enhance.png)
+![Crystal Clarity Demo](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/f97c80af-bba6-4fbd-8713-02d68f9a4283" />
+)
 
 ---
 
@@ -25,7 +27,8 @@ Two AI systems in one. RMBG-2.0 performs neural matting with pixel-perfect
 edges down to individual hair strands. LaMa reconstructs the background
 seamlessly as if the object never existed.
 
-![Magic Eraser Demo](docs/demo-edit.png)
+![Magic Eraser Demo](<img width="1918" height="993" alt="image" src="https://github.com/user-attachments/assets/7eb52f41-4a3a-4eda-b62d-0b95d4c25d69" />
+)
 
 ---
 
@@ -34,7 +37,8 @@ IP-Adapter injects the visual language of any reference artwork directly into
 SDXL's cross-attention layers. Upload a photo and a painting — the AI repaints
 your scene in that style while preserving your original composition.
 
-![Artistic Vision Demo](docs/demo-style.png)
+![Artistic Vision Demo](<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/62de8d75-9f75-4439-9b15-b827265e8437" />
+)
 
 ---
 
@@ -43,7 +47,8 @@ SIFT keypoint detection, homography warping, histogram exposure matching, and
 multiband seam blending — fused into a single drag-and-drop tool that produces
 seamless widescreen panoramas with automatic black-border cropping.
 
-![Deep Stitch Demo](docs/demo-stitch.png)
+![Deep Stitch Demo](<img width="1918" height="992" alt="image" src="https://github.com/user-attachments/assets/b0145e14-ab6e-4832-8be8-f89b16e995ea" />
+)
 
 ---
 
