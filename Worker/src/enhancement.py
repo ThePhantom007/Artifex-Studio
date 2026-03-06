@@ -52,39 +52,37 @@ except Exception as e:
 
 # ──────────────────────────────────────────────────────────────────
 # 2. NAFNet — motion/defocus deblurring (document mode)
-#
-# NAFNet (Nonlinear Activation Free Network) is a state-of-the-art
-# image restoration model from ECCV 2022. It was trained on the
-# GoPro dataset for motion deblurring and generalizes well to
-# defocus blur on documents and handwriting.
-#
-# Weights source: official NAFNet release on GitHub
+# Weights mirror: HuggingFace nyanko7/nafnet-models
+# Architecture:   NAFNetLocal (as specified in the official GoPro yml)
 # ──────────────────────────────────────────────────────────────────
-NAFNET_URL  = ("https://github.com/megvii-research/NAFNet/releases/download/"
-               "v0.1/NAFNet-GoPro-width64.pth")
+NAFNET_URL  = ("https://huggingface.co/nyanko7/nafnet-models/resolve/main/"
+               "NAFNet-GoPro-width64.pth")
 NAFNET_FILE = os.path.join(NAFNET_DIR, "NAFNet-GoPro-width64.pth")
 
 nafnet = None
 try:
     if not os.path.exists(NAFNET_FILE):
-        print("⬇️  Downloading NAFNet deblur weights (~147 MB)...")
+        print("⬇️  Downloading NAFNet weights (~272 MB) from HuggingFace...")
         load_file_from_url(url=NAFNET_URL, model_dir=NAFNET_DIR,
                            progress=True, file_name="NAFNet-GoPro-width64.pth")
 
-    from basicsr.archs.nafnet_arch import NAFNet
-    nafnet = NAFNet(img_channel=3, width=64,
-                    middle_blk_num=12,
-                    enc_blk_nums=[2, 2, 4, 8],
-                    dec_blk_nums=[2, 2, 2, 2])
+    from basicsr.archs.nafnet_arch import NAFNetLocal
+    nafnet = NAFNetLocal(
+        img_channel=3,
+        width=64,
+        middle_blk_num=12,
+        enc_blk_nums=[2, 2, 4, 8],
+        dec_blk_nums=[2, 2, 2, 2],
+    )
 
     checkpoint = torch.load(NAFNET_FILE, map_location=device)
-    # Weights may be nested under 'params' or 'params_ema'
     state = (checkpoint.get("params_ema")
              or checkpoint.get("params")
              or checkpoint)
     nafnet.load_state_dict(state, strict=True)
     nafnet.to(device).eval()
     print("✅ NAFNet deblur engine loaded.")
+
 except Exception as e:
     print(f"⚠️  NAFNet unavailable ({e}) — falling back to Wiener deconvolution.")
     nafnet = None
