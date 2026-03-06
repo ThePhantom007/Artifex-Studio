@@ -51,177 +51,152 @@ except Exception as e:
 
 
 # ──────────────────────────────────────────────────────────────────
-# ANALYSIS HELPERS
+# ANALYSIS
 # ──────────────────────────────────────────────────────────────────
 
 def _blur_score(gray: np.ndarray) -> float:
-    """Laplacian variance — lower = blurrier."""
     return float(cv2.Laplacian(gray, cv2.CV_64F).var())
 
 
 def _is_document(img_rgb: np.ndarray) -> bool:
-    """
-    True when >55% of pixels are very bright (paper/whiteboard).
-    Documents need a completely different processing pipeline to photos.
-    """
     gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
     return (np.sum(gray > 200) / gray.size) > 0.55
 
 
 # ──────────────────────────────────────────────────────────────────
 # DOCUMENT PIPELINE
+# The fundamental problem with blurry documents is optical camera
+# blur — ESRGAN cannot remove this because it was not trained for it.
+# Richardson-Lucy deconvolution reverses the blur mathematically before
+# ESRGAN runs, so ESRGAN receives a deblurred image and focuses on
+# reconstructing fine stroke detail at 4× resolution.
 # ──────────────────────────────────────────────────────────────────
 
-def _preprocess_document(img_rgb: np.ndarray, blur: float) -> np.ndarray:
+def _make_psf(radius: float, size: int = 15) -> np.ndarray:
     """
-    Document pre-processing pipeline.
-
-    The key insight: documents have two distinct regions — ink (dark,
-    high-frequency edges) and paper (bright, should be clean white).
-    Treating them uniformly amplifies paper grain into visible noise.
-
-    Strategy:
-      1. Denoise first — remove grain from paper background BEFORE any
-         sharpening so the sharpening step can't amplify it.
-      2. CLAHE only on the ink region — boost contrast of dark text
-         strokes without touching the already-bright background.
-      3. Mild unsharp mask — a restrained pass that lifts edge contrast
-         without introducing haloing on letter strokes.
+    Builds a Gaussian point-spread function approximating the camera blur.
+    radius is estimated from the blur score: lower score = more blur = wider PSF.
     """
-    img = img_rgb.copy()
-
-    # ── Step 1: Denoise — MUST come before any sharpening ──────────
-    # h=6 is conservative: removes grain while preserving stroke edges.
-    # fastNlMeansDenoisingColored works in LAB space internally, which
-    # prevents colour bleeding at ink-paper boundaries.
-    img = cv2.fastNlMeansDenoisingColored(img, None,
-                                          h=6, hColor=6,
-                                          templateWindowSize=7,
-                                          searchWindowSize=21)
-
-    # ── Step 2: Targeted CLAHE on ink region only ──────────────────
-    # Build a mask of dark pixels (ink) to restrict CLAHE application.
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    _, ink_mask = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY_INV)
-
-    lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
-    l, a, b = cv2.split(lab)
-
-    # Low clip limit (2.0) — only enhances existing contrast, doesn't
-    # create new contrast that would make grain visible.
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    l_enhanced = clahe.apply(l)
-
-    # Blend: apply enhanced L only where ink is present
-    ink_norm  = ink_mask.astype(np.float32) / 255.0
-    l_blended = (l_enhanced * ink_norm + l * (1 - ink_norm)).astype(np.uint8)
-
-    img = cv2.cvtColor(cv2.merge([l_blended, a, b]), cv2.COLOR_LAB2RGB)
-
-    # ── Step 3: Restrained unsharp mask for blurry documents ───────
-    # Only apply if actually blurry. Threshold raised vs photo mode
-    # because document grain masquerades as high-frequency signal.
-    if blur < 150:
-        sigma  = 1.5 if blur < 60 else 0.8
-        amount = 1.0 if blur < 60 else 0.6   # conservative — grain amplification risk
-        blurred = cv2.GaussianBlur(img, (0, 0), sigma)
-        img = cv2.addWeighted(img, 1 + amount, blurred, -amount, 0)
-        img = np.clip(img, 0, 255).astype(np.uint8)
-
-    return img
+    k = np.zeros((size, size), dtype=np.float64)
+    centre = size // 2
+    for i in range(size):
+        for j in range(size):
+            d = ((i - centre) ** 2 + (j - centre) ** 2) ** 0.5
+            k[i, j] = np.exp(-d ** 2 / (2 * radius ** 2))
+    k /= k.sum()
+    return k
 
 
-def _postprocess_document(pil_img: Image.Image) -> Image.Image:
+def _richardson_lucy(channel: np.ndarray, psf: np.ndarray,
+                     iterations: int = 25) -> np.ndarray:
     """
-    Document post-processing.
-
-    After ESRGAN the upscaled document has good detail but may still
-    look slightly soft on thin strokes. A final targeted sharpening
-    pass lifts the ink crispness without touching the paper background.
-
-    We deliberately avoid the Laplacian kernel here — it was the cause
-    of the heavy noise in the previous version by amplifying paper
-    texture at 4× resolution.
+    Richardson-Lucy deconvolution on a single float channel [0, 1].
+    Uses OpenCV filter2D for the convolution steps — no scipy required.
     """
-    img_cv = np.array(pil_img)
+    psf_mirror = np.flip(psf)
+    u = channel.copy()
+    eps = 1e-8
 
-    # ── Bilateral filter: smooths paper, preserves ink edges ───────
-    # d=9 neighbourhood, sigmaColor=25 (tight — only smooths similar tones),
-    # sigmaSpace=25. This step cleans up any residual ESRGAN grain on paper.
-    img_cv = cv2.bilateralFilter(img_cv, d=9, sigmaColor=25, sigmaSpace=25)
-    img_pil = Image.fromarray(img_cv)
+    for _ in range(iterations):
+        conv = cv2.filter2D(u, -1, psf.astype(np.float32))
+        relative_blur = channel / (conv + eps)
+        correction = cv2.filter2D(relative_blur, -1, psf_mirror.astype(np.float32))
+        u = u * correction
+        u = np.clip(u, 0, 1)
 
-    # ── Unsharp mask: lift text stroke edges ───────────────────────
-    # radius=1.0 targets character-level edges at 4× resolution.
-    # percent=140 is noticeable but won't introduce haloing.
-    img_pil = img_pil.filter(ImageFilter.UnsharpMask(
-        radius=1.0, percent=140, threshold=2
-    ))
+    return u
 
-    # ── Contrast: make ink darker relative to paper ────────────────
-    img_pil = ImageEnhance.Contrast(img_pil).enhance(1.4)
 
-    # ── Sharpness: final crispness boost ──────────────────────────
-    img_pil = ImageEnhance.Sharpness(img_pil).enhance(1.9)
+def _deblur_document(img_rgb: np.ndarray, blur: float) -> np.ndarray:
+    """
+    Applies Richardson-Lucy deconvolution per channel.
+    PSF radius is derived from the blur score: a lower score means
+    more blur and therefore a wider point-spread function to invert.
+    """
+    # Map blur score to PSF radius: blur=20 → radius=3.5, blur=100 → radius=1.8
+    radius = max(1.0, min(4.0, 3.5 - (blur - 20) / 50))
+    iterations = 30 if blur < 60 else 20
+    print(f"   RL deconv: PSF radius={radius:.1f}, iterations={iterations}")
 
-    return img_pil
+    psf = _make_psf(radius)
+    out = np.zeros_like(img_rgb, dtype=np.float32)
+
+    for c in range(3):
+        channel = img_rgb[:, :, c].astype(np.float64) / 255.0
+        deblurred = _richardson_lucy(channel, psf, iterations)
+        out[:, :, c] = (deblurred * 255).astype(np.float32)
+
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def _postprocess_document(img_rgb: np.ndarray) -> np.ndarray:
+    """
+    Post-ESRGAN document finishing.
+
+    At 4× resolution the deconvolved strokes are sharp but may have
+    slight ringing (RL deconv artifact). A bilateral filter removes
+    ringing from the paper area while preserving ink edges, then
+    adaptive thresholding produces clean black-on-white text.
+    """
+    # ── Bilateral: suppress ringing on paper background ────────────
+    # Edge-aware: stops at ink-paper boundary automatically.
+    smoothed = cv2.bilateralFilter(img_rgb, d=5, sigmaColor=20, sigmaSpace=20)
+
+    # ── Convert to grayscale for thresholding analysis ─────────────
+    gray = cv2.cvtColor(smoothed, cv2.COLOR_RGB2GRAY)
+
+    # ── Adaptive threshold: produces crisp black text on white paper.
+    # Block size 31 handles varying illumination across the page.
+    # C=9 subtracts a constant to ensure faint strokes aren't lost.
+    thresh = cv2.adaptiveThreshold(
+        gray, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        blockSize=31,
+        C=9
+    )
+
+    # ── Blend: 50% threshold + 50% bilateral to preserve any colour
+    # ink while still getting the crispness benefit of thresholding.
+    thresh_rgb = cv2.cvtColor(thresh, cv2.COLOR_GRAY2RGB)
+    blended = cv2.addWeighted(smoothed, 0.45, thresh_rgb, 0.55, 0)
+
+    # ── Final sharpness lift ───────────────────────────────────────
+    pil = Image.fromarray(blended)
+    pil = ImageEnhance.Sharpness(pil).enhance(2.0)
+    pil = ImageEnhance.Contrast(pil).enhance(1.3)
+
+    return np.array(pil)
 
 
 # ──────────────────────────────────────────────────────────────────
 # PHOTO PIPELINE
+# Critical rule: do NOT pre-process before ESRGAN.
+# Pre-sharpening creates ringing artifacts that ESRGAN amplifies.
+# ESRGAN needs clean, natural input — all enhancement is post-inference.
 # ──────────────────────────────────────────────────────────────────
-
-def _preprocess_photo(img_rgb: np.ndarray, blur: float) -> np.ndarray:
-    """
-    Photo pre-processing.
-
-    Gentler than document mode — natural photos have intentional
-    bokeh, skin tones, and gradients that aggressive sharpening destroys.
-    """
-    img = img_rgb.copy()
-
-    # Mild CLAHE to lift shadow detail and normalise exposure
-    lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
-    l, a, b = cv2.split(lab)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    l = clahe.apply(l)
-    img = cv2.cvtColor(cv2.merge([l, a, b]), cv2.COLOR_LAB2RGB)
-
-    # Unsharp mask scaled to blur severity
-    if blur < 300:
-        sigma  = 1.8 if blur < 80 else 1.0
-        amount = 1.4 if blur < 80 else 0.9
-        blurred = cv2.GaussianBlur(img, (0, 0), sigma)
-        img = cv2.addWeighted(img, 1 + amount, blurred, -amount, 0)
-        img = np.clip(img, 0, 255).astype(np.uint8)
-
-    return img
-
 
 def _postprocess_photo(pil_img: Image.Image, blur: float) -> Image.Image:
     """
-    Photo post-processing.
+    Photo post-processing only — no pre-processing.
 
-    Scales sharpening strength with measured blur so a sharp-but-low-res
-    photo gets a lighter touch than a genuinely blurry one.
+    Sharpening strength scales with measured blur so a crisp input
+    gets a gentle finishing pass while a very blurry one gets the
+    full treatment.
     """
-    # blur_t: 0.0 = sharp input, 1.0 = very blurry input
-    blur_t = max(0.0, min(1.0, (300 - blur) / 300))
+    blur_t = max(0.0, min(1.0, (400 - blur) / 400))
 
-    # Unsharp mask: radius targets pixel-level detail at 4× resolution
-    usm_radius  = 1.2
-    usm_percent = int(100 + blur_t * 120)   # 100–220 depending on blur
-    usm_thresh  = 2
-
+    # Unsharp mask: radius 1.5 targets pixel-level detail at 4× res
+    usm_pct = int(120 + blur_t * 130)   # 120–250
     img = pil_img.filter(ImageFilter.UnsharpMask(
-        radius=usm_radius, percent=usm_percent, threshold=usm_thresh
+        radius=1.5, percent=usm_pct, threshold=2
     ))
 
-    # Sharpness: 1.6 base + up to 0.8 extra for blurry inputs → max 2.4
-    img = ImageEnhance.Sharpness(img).enhance(1.6 + blur_t * 0.8)
+    # Sharpness: 1.8 base + up to 1.0 extra for very blurry inputs
+    img = ImageEnhance.Sharpness(img).enhance(1.8 + blur_t * 1.0)
 
-    # Mild contrast boost — lifts perceived detail without clipping
-    img = ImageEnhance.Contrast(img).enhance(1.12)
+    # Mild contrast lift — improves perceived detail without clipping
+    img = ImageEnhance.Contrast(img).enhance(1.1)
 
     return img
 
@@ -243,25 +218,27 @@ def enhance_image(img_array: np.ndarray) -> np.ndarray | str:
         print(f"🔍 Input: {w}×{h}px | blur={blur:.0f} | "
               f"mode={'document' if is_doc else 'photo'}")
 
-        # ── Stage 1: pre-process ─────────────────────────────────
         if is_doc:
-            preprocessed = _preprocess_document(img_array, blur)
+            # ── Document: deconvolve first, then ESRGAN, then threshold
+            print("   Running Richardson-Lucy deconvolution...")
+            deblurred = _deblur_document(img_array, blur)
+
+            bgr_in        = deblurred[:, :, ::-1].copy()
+            output_bgr, _ = enhancer.enhance(bgr_in, outscale=4.0)
+            output_rgb    = output_bgr[:, :, ::-1].copy()
+
+            result = _postprocess_document(output_rgb)
+
         else:
-            preprocessed = _preprocess_photo(img_array, blur)
+            # ── Photo: ESRGAN on raw input, sharpen after
+            bgr_in        = img_array[:, :, ::-1].copy()
+            output_bgr, _ = enhancer.enhance(bgr_in, outscale=4.0)
+            output_rgb    = output_bgr[:, :, ::-1].copy()
 
-        # ── Stage 2: ESRGAN 4× super-resolution ──────────────────
-        bgr_in         = preprocessed[:, :, ::-1].copy()
-        output_bgr, _  = enhancer.enhance(bgr_in, outscale=4.0)
-        output_rgb     = output_bgr[:, :, ::-1].copy()
+            output_pil = Image.fromarray(output_rgb.astype(np.uint8))
+            result = np.array(_postprocess_photo(output_pil, blur))
 
-        # ── Stage 3: post-process ────────────────────────────────
-        output_pil = Image.fromarray(output_rgb.astype(np.uint8))
-        if is_doc:
-            output_final = _postprocess_document(output_pil)
-        else:
-            output_final = _postprocess_photo(output_pil, blur)
-
-        result = np.array(output_final).astype(np.uint8)
+        result = result.astype(np.uint8)
         oh, ow = result.shape[:2]
         print(f"✨ Done: {w}×{h} → {ow}×{oh}px")
         return result
