@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image, ImageFilter, ImageEnhance
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
-from basicsr.utils.download_url import load_file_from_url
+from basicsr.utils.download_util import load_file_from_url
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -55,7 +55,7 @@ except Exception as e:
 #
 # NAFNet (Nonlinear Activation Free Network) is a state-of-the-art
 # image restoration model from ECCV 2022. It was trained on the
-# GoPro dataset for motion deblurring and generalises well to
+# GoPro dataset for motion deblurring and generalizes well to
 # defocus blur on documents and handwriting.
 #
 # Weights source: official NAFNet release on GitHub
@@ -202,7 +202,7 @@ def _postprocess_document(img_rgb: np.ndarray) -> np.ndarray:
     )
     thresh_rgb = cv2.cvtColor(thresh, cv2.COLOR_GRAY2RGB)
 
-    # 50/50 blend: preserves colour ink, gains crispness of threshold
+    # 50/50 blend: preserves color ink, gains crispness of threshold
     blended = cv2.addWeighted(smooth, 0.45, thresh_rgb, 0.55, 0)
 
     pil = Image.fromarray(blended)
