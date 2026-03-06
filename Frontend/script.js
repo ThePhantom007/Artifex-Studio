@@ -196,24 +196,45 @@ async function pollTask(taskId, imgElementId, loadingAreaId, resultAreaId, downl
 
     // ── Terminal states ────────────────────────────────────────
     if (status === "SUCCESS") {
-      stopLoadingMessages(tab);
+  stopLoadingMessages(tab);
 
-      const imageUrl = `${API_URL}/image/${data.result}?t=${Date.now()}`;
-      const imgEl = document.getElementById(imgElementId);
-      if (imgEl) imgEl.src = imageUrl;
+  const imageUrl = `${API_URL}/image/${data.result}?t=${Date.now()}`;
+  const imgEl = document.getElementById(imgElementId);
+  if (imgEl) {
+    imgEl.src = imageUrl;
 
-      document.getElementById(loadingAreaId)?.classList.add("hidden");
-      document.getElementById(resultAreaId)?.classList.remove("hidden");
+    // Once the enhanced image loads, read its natural dimensions
+    // and update the resolution badges on the enhance tab
+    if (tab === "enhance") {
+      imgEl.onload = () => {
+        const outW = imgEl.naturalWidth;
+        const outH = imgEl.naturalHeight;
+        const origEl = document.getElementById("enhance-orig");
+        const origRes = document.getElementById("enhance-orig-res");
+        const outRes  = document.getElementById("enhance-out-res");
 
-      const btn = downloadBtnId ? document.getElementById(downloadBtnId) : null;
-      if (btn) {
-        btn.onclick = (e) => {
-          e.preventDefault();
-          forceDownload(imageUrl, `ArtifexStudio_${data.result}`);
-        };
-      }
-      return;
+        if (origEl && origEl.naturalWidth) {
+          if (origRes) origRes.textContent =
+            `Original  ${origEl.naturalWidth} × ${origEl.naturalHeight}px`;
+        }
+        if (outRes) outRes.textContent =
+          `Enhanced  ${outW} × ${outH}px`;
+      };
     }
+  }
+
+  document.getElementById(loadingAreaId)?.classList.add("hidden");
+  document.getElementById(resultAreaId)?.classList.remove("hidden");
+
+  const btn = downloadBtnId ? document.getElementById(downloadBtnId) : null;
+  if (btn) {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      forceDownload(imageUrl, `ArtifexStudio_${data.result}`);
+    };
+  }
+  return;
+}
 
     if (status === "FAILURE") {
       stopLoadingMessages(tab);

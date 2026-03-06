@@ -1,7 +1,7 @@
 import os
 import torch
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter, ImageEnhance
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
@@ -17,11 +17,6 @@ if device == "cuda":
     print(f"   GPU: {torch.cuda.get_device_name(0)}")
     print(f"   VRAM: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB")
 
-# ── Weights path ──────────────────────────────────────────────────
-# When model_path is a URL, RealESRGANer internally calls load_file_from_url
-# with model_dir hardcoded to {realesrgan_package}/weights/ — a root-owned
-# system directory that is not writable at runtime.
-# Fix: pre-download to our own writable cache dir, pass the local path.
 WEIGHTS_DIR = os.path.join(
     os.getenv("TORCH_HOME", "/app/.cache/torch"), "realesrgan"
 )
@@ -32,7 +27,6 @@ WEIGHTS_FILE = os.path.join(WEIGHTS_DIR, "RealESRGAN_x4plus.pth")
 
 enhancer = None
 try:
-    # Download only if not already cached
     if not os.path.exists(WEIGHTS_FILE):
         print("⬇️  Downloading Real-ESRGAN weights (~67 MB)...")
         load_file_from_url(
@@ -49,12 +43,12 @@ try:
 
     enhancer = RealESRGANer(
         scale=4,
-        model_path=WEIGHTS_FILE,   # local path — never touches the package dir
+        model_path=WEIGHTS_FILE,
         model=model,
         tile=512,
         tile_pad=32,
         pre_pad=0,
-        half=True if device == "cuda" else False,
+        half=(device == "cuda"),
         device=device,
     )
     print("✅ Real-ESRGAN x4plus Engine loaded and ready.")
@@ -64,20 +58,52 @@ except Exception as e:
     enhancer = None
 
 
+def _sharpen_result(pil_img: Image.Image) -> Image.Image:
+    """
+    Applies a two-stage sharpening pass after ESRGAN inference.
+
+    Stage 1 — Unsharp mask: enhances fine edges and micro-texture
+    without introducing haloing. Radius 1.5 targets the pixel-level
+    detail that ESRGAN reconstructs.
+
+    Stage 2 — Sharpness enhancer: boosts the overall perceived crispness
+    by a moderate factor (1.45). Values above ~1.6 introduce artefacts.
+    """
+    # Unsharp mask (radius, percent strength, threshold)
+    sharpened = pil_img.filter(ImageFilter.UnsharpMask(
+        radius=1.5,
+        percent=60,
+        threshold=3,
+    ))
+    # Global sharpness boost
+    sharpened = ImageEnhance.Sharpness(sharpened).enhance(1.45)
+    return sharpened
+
+
 def enhance_image(img_array: np.ndarray) -> np.ndarray | str:
     if enhancer is None:
         return "Error: Real-ESRGAN engine failed to load. Check worker logs."
     try:
-        print("🔍 Real-ESRGAN is restoring image quality...")
+        h, w = img_array.shape[:2]
+        print(f"🔍 Enhancing {w}×{h}px image with Real-ESRGAN + sharpening...")
+
         img_bgr = img_array[:, :, ::-1].copy()
         output_bgr, _ = enhancer.enhance(img_bgr, outscale=4.0)
         output_rgb = output_bgr[:, :, ::-1].copy()
-        print("✨ Enhancement complete.")
-        return output_rgb.astype(np.uint8)
+
+        # Post-process: sharpening pass makes the 4× detail visible
+        output_pil    = Image.fromarray(output_rgb.astype(np.uint8))
+        output_sharp  = _sharpen_result(output_pil)
+        output_final  = np.array(output_sharp)
+
+        oh, ow = output_final.shape[:2]
+        print(f"✨ Enhancement complete: {w}×{h} → {ow}×{oh}px")
+        return output_final.astype(np.uint8)
+
     except RuntimeError as e:
         if "out of memory" in str(e).lower():
             torch.cuda.empty_cache()
-            return "Error: GPU OOM. Reduce tile size from 512 to 256 in enhancement.py and rebuild."
+            return "Error: GPU OOM — reduce tile size from 512 to 256 in enhancement.py."
         return f"Runtime Error: {str(e)}"
     except Exception as e:
-        return f"Unexpected Inference Error: {str(e)}"
+        return f"Unexpected Error: {str(e)}"
