@@ -63,22 +63,22 @@ seamless widescreen panoramas with automatic black-border cropping.
 ## Architecture
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    Docker Network                    │
+│                    Docker Network                   │
 │                                                     │
 │  ┌──────────┐    ┌──────────┐    ┌───────────────┐  │
 │  │  Nginx   │    │ FastAPI  │    │ Celery Worker │  │
-│  │ :80      │───▶│ :8000    │───▶│ (GPU)         │  │
+│  │ :80      │───▶│ :8000    │───▶│ (GPU)        │  │
 │  │ frontend │    │ backend  │    │               │  │
 │  └──────────┘    └────┬─────┘    └───────┬───────┘  │
 │                       │                  │          │
-│                  ┌────▼──────────────────▼────┐     │
-│                  │         Redis :6379         │     │
-│                  │   (broker + result store)   │     │
-│                  └─────────────────────────────┘     │
+│                  ┌────▼──────────────────▼─────┐    │
+│                  │         Redis :6379         │    │
+│                  │   (broker + result store)   │    │
+│                  └─────────────────────────────┘    │
 │                                                     │
 │  ┌──────────────────────────────────────────────┐   │
-│  │         /data  (named Docker volume)          │   │
-│  │   upload staging · generated outputs          │   │
+│  │         /data  (named Docker volume)         │   │
+│  │   upload staging · generated outputs         │   │
 │  └──────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────┘
 ```
@@ -178,7 +178,8 @@ artifex-studio/
 │       ├── enhancement.py       # Real-ESRGAN x4plus
 │       ├── editing.py           # RMBG-2.0 + LaMa
 │       ├── style_transfer.py    # SDXL + IP-Adapter
-│       └── stitching.py         # OpenCV panorama
+│       ├── stitching.py         # OpenCV panorama
+        └── nafnet_arch.py       # Patch for RMBG-2.0 compatibility with torchvision ≥ 0.16
 │
 ├── frontend/
 │   ├── Dockerfile

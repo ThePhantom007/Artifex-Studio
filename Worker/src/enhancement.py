@@ -52,8 +52,8 @@ except Exception as e:
 
 # ──────────────────────────────────────────────────────────────────
 # 2. NAFNet — motion/defocus deblurring (document mode)
-# Weights mirror: HuggingFace nyanko7/nafnet-models
-# Architecture:   NAFNetLocal (as specified in the official GoPro yml)
+# Architecture bundled in src/nafnet_arch.py — no external repo needed.
+# Weights: HuggingFace mirror of the official GoPro checkpoint.
 # ──────────────────────────────────────────────────────────────────
 NAFNET_URL  = ("https://huggingface.co/nyanko7/nafnet-models/resolve/main/"
                "NAFNet-GoPro-width64.pth")
@@ -62,12 +62,12 @@ NAFNET_FILE = os.path.join(NAFNET_DIR, "NAFNet-GoPro-width64.pth")
 nafnet = None
 try:
     if not os.path.exists(NAFNET_FILE):
-        print("⬇️  Downloading NAFNet weights (~272 MB) from HuggingFace...")
+        print("⬇️  Downloading NAFNet weights (~272 MB)...")
         load_file_from_url(url=NAFNET_URL, model_dir=NAFNET_DIR,
                            progress=True, file_name="NAFNet-GoPro-width64.pth")
 
-    from basicsr.archs.nafnet_arch import NAFNetLocal
-    nafnet = NAFNetLocal(
+    from src.nafnet_arch import NAFNet
+    nafnet = NAFNet(
         img_channel=3,
         width=64,
         middle_blk_num=12,
@@ -86,7 +86,6 @@ try:
 except Exception as e:
     print(f"⚠️  NAFNet unavailable ({e}) — falling back to Wiener deconvolution.")
     nafnet = None
-
 
 # ──────────────────────────────────────────────────────────────────
 # ANALYSIS HELPERS
