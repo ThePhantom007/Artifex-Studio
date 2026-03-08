@@ -66,7 +66,7 @@ try:
         load_file_from_url(url=NAFNET_URL, model_dir=NAFNET_DIR,
                            progress=True, file_name="NAFNet-GoPro-width64.pth")
 
-    from nafnet_arch import NAFNet
+    from src.nafnet_arch import NAFNet
     nafnet = NAFNet(
         img_channel=3,
         width=64,
