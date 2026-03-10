@@ -1,15 +1,14 @@
 # ArtifexStudio — Docker Compose v2
 # ─────────────────────────────────────────────────────────────────
 # Services: redis | backend | worker | frontend
-#
-# Changes from v1:
+# Key features:
 #   • Redis port 6379 no longer exposed to the host — it only needs
 #     to be reachable by backend and worker inside neuro-net.
 #   • Redis persistence via AOF (appendonly) — task results survive
 #     a Redis restart rather than being lost entirely.
 #   • Redis memory cap with LRU eviction — prevents OOM on the host.
-#   • Backend and frontend healthchecks added.
-#   • Worker healthcheck uses celery inspect ping.
+#   • Backend and frontend health checks added.
+#   • Worker health check uses celery inspect ping.
 #   • restart: unless-stopped — containers don't auto-restart after
 #     `docker compose stop` (intentional stops), but do after crashes.
 #   • PYTHONUNBUFFERED / PYTHONDONTWRITEBYTECODE on all Python containers.
@@ -134,10 +133,6 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - DATA_DIR=/data
-      # HuggingFace and PyTorch model caches persist on the named volume.
-      # Models survive container rebuilds — no re-downloading after `docker
-      # compose build`.
-      # NVIDIA runtime — pass the GPU into the container
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
@@ -163,7 +158,7 @@ services:
       timeout: 20s
       retries: 3
       # Workers take time to load all AI models on first start —
-      # give them 3 minutes before the healthcheck kicks in.
+      # give them 3 minutes before the health check kicks in.
       start_period: 180s
 
     logging:

@@ -55,7 +55,6 @@ RUN sed -i \
          {} + 2>/dev/null || true
 
 # ── Pre-create cache directories inside the container layer ──────
-# These sit in /app/.cache which is the container's own writable
 # filesystem — no volume mount, no ownership conflicts.
 RUN mkdir -p \
     /app/.cache/huggingface/hub \

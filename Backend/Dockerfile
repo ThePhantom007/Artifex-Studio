@@ -17,11 +17,6 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-# Non-root user removed — the /data named volume mounts as root:root
-# at runtime regardless of what is set in the image, causing Permission
-# denied on every file write. Running as root inside this container
-# is acceptable for a local development workstation.
-
 EXPOSE 8000
 
 HEALTHCHECK --interval=20s --timeout=8s --start-period=15s --retries=3 \

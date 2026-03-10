@@ -10,8 +10,7 @@ def _normalize_exposures(images: list) -> list:
     """
     Matches the histogram of each image to the first image.
     This eliminates visible seam lines caused by auto-exposure differences
-    between frames — the single biggest source of "stitched" looking panoramas.
-    scikit-image is already in requirements.txt.
+    between frames.
     """
     if len(images) < 2:
         return images
@@ -26,17 +25,12 @@ def _normalize_exposures(images: list) -> list:
 def _fast_inner_crop(pano: np.ndarray) -> np.ndarray:
     """
     Finds the largest axis-aligned rectangle with no black border pixels.
-
     Replaces the original erosion loop which was O(n * iterations) and could
     take minutes on a large panorama. This row/column scan is O(n).
     """
     # Small border ensures contours close properly at image edges
     bordered = cv2.copyMakeBorder(pano, 10, 10, 10, 10, cv2.BORDER_CONSTANT, (0, 0, 0))
 
-    # FIX: The original line 55 was:
-    #   gray = cv2.cvtColor(pano, cv2.cvtColor(pano, cv2.COLOR_BGR2GRAY) ...)
-    # which passed the RESULT of an inner cvtColor as the conversion CODE
-    # argument of the outer cvtColor. This crashes every time.
     gray = cv2.cvtColor(bordered, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
 
@@ -48,7 +42,7 @@ def _fast_inner_crop(pano: np.ndarray) -> np.ndarray:
     valid_cols = np.where(col_mask)[0]
 
     if len(valid_rows) == 0 or len(valid_cols) == 0:
-        # Fallback: use largest contour bounding box if the scan finds nothing
+        # Fallback: use the largest contour bounding box if the scan finds nothing
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             return pano  # Nothing to crop, return as-is
@@ -94,13 +88,13 @@ def stitch_images(images: list[np.ndarray]) -> np.ndarray | str:
             processed.append(img)
 
         # --- 2. Exposure Normalization ---
-        # Aligns brightness/colour across frames before blending.
+        # Aligns brightness/color across frames before blending.
         # This is the most effective technique for eliminating visible seams.
-        print("🎨 Normalizing exposure across frames...")
+        print("Normalizing exposure across frames...")
         processed = _normalize_exposures(processed)
 
         # --- 3. Stitching ---
-        print(f"🧵 Stitching {len(processed)} images...")
+        print(f"Stitching {len(processed)} images...")
         stitcher = cv2.Stitcher.create(cv2.Stitcher_PANORAMA)
         status, pano = stitcher.stitch(processed)
 
@@ -119,17 +113,17 @@ def stitch_images(images: list[np.ndarray]) -> np.ndarray | str:
                 ),
             }
             msg = error_map.get(status, f"Unknown stitching error (code {status}).")
-            print(f"❌ {msg}")
+            print(f"{msg}")
             return f"Error: {msg}"
 
-        print("✅ Stitching successful. Cropping borders...")
+        print("Stitching successful. Cropping borders...")
 
         # --- 4. Auto-Crop ---
         cropped = _fast_inner_crop(pano)
 
-        print("🖼️ Panorama complete!")
+        print("Panorama complete!")
         return cropped
 
     except Exception as e:
-        print(f"❌ Stitching error: {e}")
+        print(f"Stitching error: {e}")
         return f"Unexpected Error: {str(e)}"

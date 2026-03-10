@@ -2,6 +2,7 @@
 NAFNet architecture — Nonlinear Activation Free Network (ECCV 2022)
 Bundled directly to avoid dependency on megvii-research/NAFNet repo.
 Source: https://github.com/megvii-research/NAFNet
+Copy of the PyTorch implementation from NAFNet's official repository, with some modifications for integration.
 """
 import torch
 import torch.nn as nn

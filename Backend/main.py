@@ -1,7 +1,5 @@
 """
-ArtifexStudio — FastAPI Backend Gateway v2
-───────────────────────────────────────────
-Improvements over v1
+ArtifexStudio — FastAPI Backend Gateway
   • Lifespan context replaces deprecated @app.on_event
   • Strict MIME-type + file-size validation on every upload
   • Path traversal guard on /image and /download
@@ -65,7 +63,7 @@ ALLOWED_MIME = {
 
 
 # ──────────────────────────────────────────────────────────────────
-# CELERY CLIENT  (dispatches tasks; runs no workers itself)
+# CELERY CLIENT
 # ──────────────────────────────────────────────────────────────────
 celery_app = Celery("neuro_worker", broker=CELERY_BROKER, backend=CELERY_BROKER)
 
@@ -83,9 +81,9 @@ async def lifespan(app: FastAPI):
     try:
         r = redis_sync.Redis(host=REDIS_HOST, port=REDIS_PORT, socket_connect_timeout=3)
         r.ping()
-        log.info("✅ Redis connection verified.")
+        log.info("Redis connection verified.")
     except Exception as exc:
-        log.warning("⚠️  Redis ping failed at startup: %s", exc)
+        log.warning("Redis ping failed at startup: %s", exc)
 
     yield
 
@@ -182,7 +180,7 @@ def _task_response(task_id: str) -> dict:
 
 @app.get("/", tags=["Infrastructure"])
 def root():
-    """Liveness probe — used by Docker healthcheck."""
+    """Liveness probe — used by Docker health check."""
     return {"status": "online", "service": "ArtifexStudio Backend v2"}
 
 
@@ -271,7 +269,7 @@ def get_status(task_id: str):
     Returns current Celery task state.
 
     Handles every state Celery can produce so the frontend never
-    receives an unrecognised status and loops forever.
+    receives an unrecognized status and loops forever.
     """
     try:
         task = celery_app.AsyncResult(task_id)
@@ -419,7 +417,7 @@ async def style_transfer(
     content_path = await _validate_and_save(content_image, "style_content")
     style_path   = await _validate_and_save(style_image,   "style_ref")
 
-    # Sanitise: strip control characters, cap at 300 chars
+    # Sanitize: strip control characters, cap at 300 chars
     clean_prompt = prompt.strip()[:300] if prompt else ""
 
     task = celery_app.send_task(

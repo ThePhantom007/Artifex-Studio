@@ -1,7 +1,5 @@
 """
 ArtifexStudio — Celery Worker Task Definitions
-───────────────────────────────────────────────
-Improvements over v1
   • Loads celery_config via app.config_from_object() — v1 ignored the config
     entirely and used hardcoded defaults.
   • bind=True on every task — tasks can now update their own state to STARTED
@@ -30,7 +28,7 @@ from celery import Celery
 from celery.exceptions import SoftTimeLimitExceeded
 from PIL import Image
 
-# AI modules (loaded at import time — models warm up once per worker process)
+# AI modules
 from src.enhancement    import enhance_image
 from src.stitching      import stitch_images
 from src.style_transfer import apply_style_transfer
@@ -45,8 +43,7 @@ logging.basicConfig(
 log = logging.getLogger("artifex.worker")
 
 # ─── Celery Application ───────────────────────────────────────────
-# Build the broker URL the same way celery_config.py does so both always
-# agree on the connection string, regardless of env-var changes.
+# Build the broker URL the same way celery_config.py does so both always.
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 REDIS_DB   = int(os.getenv("REDIS_DB", "0"))
@@ -56,8 +53,6 @@ _BROKER = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 celery_app = Celery("neuro_worker", broker=_BROKER, backend=_BROKER)
 
 # Load all tuning from the shared config module.
-# This is what v1 was missing — without this line, celery_config.py has
-# no effect on the worker at all.
 celery_app.config_from_object("celery_config")
 
 # ─── Shared Volume ────────────────────────────────────────────────
@@ -193,7 +188,6 @@ def task_stitch_images(self, filepaths: list) -> dict:
 
     try:
         # Load as BGR for OpenCV stitching pipeline.
-        # The null-guard in load_image_bgr catches the silent None that
         # cv2.imread returns for missing/corrupt files.
         images = []
         for fp in filepaths:

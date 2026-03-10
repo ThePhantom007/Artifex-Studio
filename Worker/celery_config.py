@@ -31,11 +31,6 @@ result_expires = 6 * 60 * 60  # 6 hours
 worker_max_tasks_per_child = 100
 worker_prefetch_multiplier = 1
 
-# ─── NO task_routes, NO task_default_queue override ───────────────
-# The backend sends tasks to Celery's built-in default queue "celery".
-# The worker must consume that same queue. Any custom queue names here
-# cause a mismatch where tasks queue up and are never picked up.
-
 # ─── Monitoring ───────────────────────────────────────────────────
 worker_send_task_events = True
 task_send_sent_event    = True

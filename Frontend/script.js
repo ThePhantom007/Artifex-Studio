@@ -1,9 +1,5 @@
 const API_URL = `http://${window.location.hostname}:8000`;
 
-// ─── Per-feature timeout limits (milliseconds) ────────────────────
-// These reflect realistic worst-case inference times including
-// first-run model weight downloads. If a task exceeds this duration
-// the frontend gives up and shows an error rather than looping forever.
 const TASK_TIMEOUTS = {
   enhance: 5  * 60 * 1000,   // 5 min  — Real-ESRGAN
   edit:    4  * 60 * 1000,   // 4 min  — RMBG-2.0 / LaMa

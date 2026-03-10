@@ -179,7 +179,7 @@ artifex-studio/
 │       ├── editing.py           # RMBG-2.0 + LaMa
 │       ├── style_transfer.py    # SDXL + IP-Adapter
 │       ├── stitching.py         # OpenCV panorama
-        └── nafnet_arch.py       # Patch for RMBG-2.0 compatibility with torchvision ≥ 0.16
+        └── nafnet_arch.py       # Optional - Acts as a helper for ESRGAN with text based images
 │
 ├── frontend/
 │   ├── Dockerfile
@@ -300,12 +300,6 @@ worker Dockerfiles must **not** use a non-root `USER` directive. If you see
 `[Errno 13] Permission denied: '/data/...'`, check that neither Dockerfile
 contains a `USER` instruction.
 
-### `No module named torchvision.transforms.functional_tensor`
-
-This is a `basicsr` / `facexlib` compatibility bug with torchvision ≥ 0.16.
-The worker Dockerfile contains a `sed` patch that fixes it automatically. If
-you see this error, ensure the patch step is present in your `worker/Dockerfile`
-and run `docker compose up -d --build worker`.
 
 ### RMBG-2.0 gated repo error (401)
 
@@ -344,6 +338,7 @@ All variables are set in `.env`. Copy `.env.example` as a starting point.
 - **[Celery](https://docs.celeryq.dev/)** — distributed task queue
 - **[Redis](https://redis.io/)** — message broker and result backend
 - **[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)** — image restoration
+- **[NAFNet](https://github.com/megvii-research/NAFNet)** - optional helper for text-based image restoration
 - **[RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0)** — background removal
 - **[LaMa](https://github.com/advimman/lama)** — image inpainting
 - **[Stable Diffusion XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)** — generative image model

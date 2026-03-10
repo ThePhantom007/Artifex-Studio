@@ -7,7 +7,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-print("🚀 Initializing Magic Editor Engine...")
+print("Initializing Magic Editor Engine")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 hf_device_id = 0 if torch.cuda.is_available() else -1
@@ -27,9 +27,9 @@ try:
     )
     rmbg_model.to(device)
     rmbg_model.eval()
-    print("✅ RMBG-2.0 Background Removal Engine loaded.")
+    print("RMBG-2.0 Background Removal Engine loaded.")
 except Exception as e:
-    print(f"❌ RMBG-2.0 Load Failed: {e}")
+    print(f"RMBG-2.0 Load Failed: {e}")
     rmbg_model = None
 
 # Transform pipeline expected by RMBG-2.0
@@ -46,9 +46,9 @@ lama_model = None
 try:
     from simple_lama_inpainting import SimpleLama
     lama_model = SimpleLama()
-    print("✅ LaMa Generative Erase Engine loaded.")
+    print("LaMa Generative Erase Engine loaded.")
 except Exception as e:
-    print(f"❌ LaMa Load Failed: {e}")
+    print(f"LaMa Load Failed: {e}")
     lama_model = None
 
 
@@ -93,10 +93,10 @@ def edit_image(
             if rmbg_model is None:
                 return "Error: Background removal model failed to load. Check worker logs."
 
-            print("✂️ Extracting subject with RMBG-2.0...")
+            print("Extracting subject with RMBG-2.0...")
             pil_img = Image.fromarray(img_array).convert("RGB")
             result_pil = _run_rmbg(pil_img)
-            print("✅ Subject extracted.")
+            print("Subject extracted.")
             return np.array(result_pil)
 
         elif action == "erase":
@@ -105,11 +105,11 @@ def edit_image(
             if mask_array is None:
                 return "Error: A mask image is required for Generative Erase."
 
-            print("🖌️ LaMa Generative Erase in progress...")
+            print("LaMa Generative Erase in progress...")
             init_image = Image.fromarray(img_array).convert("RGB")
             original_size = init_image.size
 
-            # NEAREST resize prevents anti-aliasing grey fringe on mask edges
+            # NEAREST resize prevents anti-aliasing gray fringe on mask edges
             mask_image = Image.fromarray(mask_array).convert("L")
             mask_image = mask_image.resize(original_size, Image.Resampling.NEAREST)
 
@@ -129,7 +129,7 @@ def edit_image(
                     original_size, Image.Resampling.LANCZOS
                 )
 
-            print("✅ Object erased.")
+            print("Object erased.")
             return np.array(result_image.convert("RGB"))
 
         else:

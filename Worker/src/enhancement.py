@@ -10,7 +10,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-print("🚀 Initializing Real-ESRGAN Enhancement Engine...")
+print("Initializing Real-ESRGAN Enhancement Engine...")
 
 device     = "cuda" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if device == "cuda" else torch.float32
@@ -35,7 +35,7 @@ ESRGAN_FILE = os.path.join(ESRGAN_DIR, "RealESRGAN_x4plus.pth")
 enhancer = None
 try:
     if not os.path.exists(ESRGAN_FILE):
-        print("⬇️  Downloading Real-ESRGAN weights (~67 MB)...")
+        print("Downloading Real-ESRGAN weights (~67 MB)...")
         load_file_from_url(url=ESRGAN_URL, model_dir=ESRGAN_DIR,
                            progress=True, file_name="RealESRGAN_x4plus.pth")
 
@@ -46,9 +46,9 @@ try:
         tile=512, tile_pad=32, pre_pad=0,
         half=(device == "cuda"), device=device,
     )
-    print("✅ Real-ESRGAN x4plus loaded.")
+    print("Real-ESRGAN x4plus loaded.")
 except Exception as e:
-    print(f"❌ Real-ESRGAN Load Failed: {e}")
+    print(f"Real-ESRGAN Load Failed: {e}")
 
 # ──────────────────────────────────────────────────────────────────
 # 2. NAFNet — motion/defocus deblurring (document mode)
@@ -62,7 +62,7 @@ NAFNET_FILE = os.path.join(NAFNET_DIR, "NAFNet-GoPro-width64.pth")
 nafnet = None
 try:
     if not os.path.exists(NAFNET_FILE):
-        print("⬇️  Downloading NAFNet weights (~272 MB)...")
+        print("Downloading NAFNet weights (~272 MB)...")
         load_file_from_url(url=NAFNET_URL, model_dir=NAFNET_DIR,
                            progress=True, file_name="NAFNet-GoPro-width64.pth")
 
@@ -81,10 +81,10 @@ try:
              or checkpoint)
     nafnet.load_state_dict(state, strict=True)
     nafnet.to(device).eval()
-    print("✅ NAFNet deblur engine loaded.")
+    print("NAFNet deblur engine loaded.")
 
 except Exception as e:
-    print(f"⚠️  NAFNet unavailable ({e}) — falling back to Wiener deconvolution.")
+    print(f"NAFNet unavailable ({e}) — falling back to Wiener deconvolution.")
     nafnet = None
 
 # ──────────────────────────────────────────────────────────────────
@@ -128,7 +128,7 @@ def _wiener_deblur(img_rgb: np.ndarray, blur: float) -> np.ndarray:
     """
     Wiener filter fallback when NAFNet is unavailable.
     Uses skimage's unsupervised_wiener which estimates the noise
-    level automatically — more stable than Richardson-Lucy.
+    level automatically.
     """
     from skimage.restoration import unsupervised_wiener
     from skimage.draw import disk
@@ -149,7 +149,6 @@ def _wiener_deblur(img_rgb: np.ndarray, blur: float) -> np.ndarray:
 
 # ──────────────────────────────────────────────────────────────────
 # PHOTO PRE-PROCESSING  (before ESRGAN)
-#
 # This version was confirmed to produce the best photo results.
 # CLAHE normalises local contrast; the unsharp mask recovers
 # apparent sharpness that ESRGAN then preserves at 4× resolution.
@@ -234,7 +233,7 @@ def enhance_image(img_array: np.ndarray) -> np.ndarray | str:
         blur   = _blur_score(gray)
         is_doc = _is_document(img_array)
 
-        print(f"🔍 Input: {w}×{h}px | blur={blur:.0f} | "
+        print(f"Input: {w}×{h}px | blur={blur:.0f} | "
               f"mode={'document' if is_doc else 'photo'}")
 
         if is_doc:
@@ -269,7 +268,7 @@ def enhance_image(img_array: np.ndarray) -> np.ndarray | str:
 
         result = result.astype(np.uint8)
         oh, ow = result.shape[:2]
-        print(f"✨ Done: {w}×{h} → {ow}×{oh}px")
+        print(f"Done: {w}×{h} → {ow}×{oh}px")
         return result
 
     except RuntimeError as e:
