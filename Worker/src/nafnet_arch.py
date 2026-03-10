@@ -119,7 +119,7 @@ class NAFNet(nn.Module):
 
         for num in dec_blk_nums:
             self.ups.append(nn.Sequential(
-                nn.Conv2d(ch, ch * 2, 1),
+                nn.Conv2d(ch, ch * 2, 1, bias=False),
                 nn.PixelShuffle(2),
             ))
             ch //= 2
