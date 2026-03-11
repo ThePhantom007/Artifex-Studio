@@ -103,25 +103,34 @@ def _is_document(img_rgb: np.ndarray) -> bool:
 # DOCUMENT DEBLUR  (NAFNet or Wiener fallback)
 # ──────────────────────────────────────────────────────────────────
 
-def _nafnet_deblur(img_rgb: np.ndarray) -> np.ndarray:
-    """Runs NAFNet inference. Input/output: uint8 RGB numpy array."""
-    inp = torch.from_numpy(img_rgb).float().permute(2, 0, 1).unsqueeze(0) / 255.0
-    inp = inp.to(device)
+def _nafnet_deblur(img_rgb: np.ndarray, blur: float) -> np.ndarray:
+    """
+    Runs NAFNet inference. For very blurry inputs (blur score < 50)
+    runs two passes — the second pass refines residual blur left by
+    the first.
+    """
+    def _single_pass(arr: np.ndarray) -> np.ndarray:
+        inp = torch.from_numpy(arr).float().permute(2, 0, 1).unsqueeze(0) / 255.0
+        inp = inp.to(device)
+        _, _, h, w = inp.shape
+        pad_h = (16 - h % 16) % 16
+        pad_w = (16 - w % 16) % 16
+        if pad_h or pad_w:
+            inp = torch.nn.functional.pad(inp, (0, pad_w, 0, pad_h), mode="reflect")
+        with torch.inference_mode():
+            out = nafnet(inp)
+        out = out[:, :, :h, :w]
+        out = out.squeeze(0).permute(1, 2, 0).clamp(0, 1).cpu().numpy()
+        return (out * 255).astype(np.uint8)
 
-    # NAFNet requires dimensions divisible by 16 — pad if necessary
-    _, _, h, w = inp.shape
-    pad_h = (16 - h % 16) % 16
-    pad_w = (16 - w % 16) % 16
-    if pad_h or pad_w:
-        inp = torch.nn.functional.pad(inp, (0, pad_w, 0, pad_h), mode="reflect")
+    result = _single_pass(img_rgb)
 
-    with torch.inference_mode():
-        out = nafnet(inp)
+    # Second pass for severely blurry documents
+    if blur < 50:
+        print("   Running second NAFNet pass (severe blur detected)...")
+        result = _single_pass(result)
 
-    # Crop padding back off
-    out = out[:, :, :h, :w]
-    out = out.squeeze(0).permute(1, 2, 0).clamp(0, 1).cpu().numpy()
-    return (out * 255).astype(np.uint8)
+    return result
 
 
 def _wiener_deblur(img_rgb: np.ndarray, blur: float) -> np.ndarray:
@@ -181,30 +190,42 @@ def _preprocess_photo(img_rgb: np.ndarray, blur: float) -> np.ndarray:
 
 def _postprocess_document(img_rgb: np.ndarray) -> np.ndarray:
     """
-    After NAFNet + ESRGAN: adaptive threshold blend for crisp text,
-    bilateral filter to suppress any residual ringing on paper.
+    Post-ESRGAN document finishing — NO thresholding.
+
+    Thresholding destroys colored text, colored backgrounds, uneven
+    lighting, and any document that isn't a pure black-on-white scan.
+    NAFNet + ESRGAN already produce a sharp, deblurred result.
+    This pass only lifts contrast and sharpness to make it look crisp
+    without altering the fundamental tonality of the image.
     """
-    # Bilateral: smooth paper without blurring ink edges
-    smooth = cv2.bilateralFilter(img_rgb, d=5, sigmaColor=20, sigmaSpace=20)
-
-    gray = cv2.cvtColor(smooth, cv2.COLOR_RGB2GRAY)
-
-    # Adaptive threshold — handles uneven page illumination
-    thresh = cv2.adaptiveThreshold(
-        gray, 255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY,
-        blockSize=31, C=9
+    # ── Mild denoise — remove ESRGAN upscaling grain ───────────────
+    denoised = cv2.fastNlMeansDenoisingColored(
+        img_rgb, None,
+        h=3, hColor=3,
+        templateWindowSize=7,
+        searchWindowSize=21,
     )
-    thresh_rgb = cv2.cvtColor(thresh, cv2.COLOR_GRAY2RGB)
 
-    # 50/50 blend: preserves color ink, gains crispness of threshold
-    blended = cv2.addWeighted(smooth, 0.45, thresh_rgb, 0.55, 0)
+    # ── CLAHE on luminance only — boost local contrast of ink ──────
+    # clipLimit=3.0 lifts faint strokes without blowing out paper.
+    lab = cv2.cvtColor(denoised, cv2.COLOR_RGB2LAB)
+    l, a, b = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    l = clahe.apply(l)
+    enhanced = cv2.cvtColor(cv2.merge([l, a, b]), cv2.COLOR_LAB2RGB)
 
-    pil = Image.fromarray(blended)
+    # ── Unsharp mask — crisp edges at 4× resolution ────────────────
+    # radius=1.0 at 4× targets character stroke edges specifically.
+    blurred = cv2.GaussianBlur(enhanced, (0, 0), 1.0)
+    sharpened = cv2.addWeighted(enhanced, 2.2, blurred, -1.2, 0)
+    sharpened = np.clip(sharpened, 0, 255).astype(np.uint8)
+
+    # ── PIL finishing pass ─────────────────────────────────────────
+    pil = Image.fromarray(sharpened)
+    pil = ImageEnhance.Contrast(pil).enhance(1.5)
     pil = ImageEnhance.Sharpness(pil).enhance(2.0)
-    pil = ImageEnhance.Contrast(pil).enhance(1.3)
-    return np.array(pil)
+
+    return np.array(pil).astype(np.uint8)
 
 
 def _postprocess_photo(pil_img: Image.Image, blur: float) -> Image.Image:
@@ -240,7 +261,7 @@ def enhance_image(img_array: np.ndarray) -> np.ndarray | str:
             # ── Stage 1: neural deblur (NAFNet or Wiener fallback) ──
             if nafnet is not None:
                 print("   NAFNet deblurring...")
-                deblurred = _nafnet_deblur(img_array)
+                deblurred = _nafnet_deblur(img_array, blur)
             else:
                 print("   Wiener deblurring (NAFNet unavailable)...")
                 deblurred = _wiener_deblur(img_array, blur)
