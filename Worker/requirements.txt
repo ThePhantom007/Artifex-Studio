@@ -9,16 +9,16 @@ Pillow
 scikit-image
 
 # AI / Deep Learning
-diffusers==0.31.0
-transformers==4.47.1
+diffusers
+transformers
 accelerate
 safetensors
 scipy
 ftfy
 
 # Real-ESRGAN
-basicsr==1.4.2
-realesrgan==0.3.0
+basicsr
+realesrgan
 
 # Generative erase
 simple-lama-inpainting

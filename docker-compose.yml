@@ -1,13 +1,13 @@
-# ArtifexStudio — Docker Compose v2
+# ArtifexStudio — Docker Compose
 # ─────────────────────────────────────────────────────────────────
 # Services: redis | backend | worker | frontend
 # Key features:
-#   • Redis port 6379 no longer exposed to the host — it only needs
+#   • Redis port 6379 not exposed to the host — it only needs
 #     to be reachable by backend and worker inside neuro-net.
 #   • Redis persistence via AOF (appendonly) — task results survive
 #     a Redis restart rather than being lost entirely.
 #   • Redis memory cap with LRU eviction — prevents OOM on the host.
-#   • Backend and frontend health checks added.
+#   • Backend and frontend health checks.
 #   • Worker health check uses celery inspect ping.
 #   • restart: unless-stopped — containers don't auto-restart after
 #     `docker compose stop` (intentional stops), but do after crashes.

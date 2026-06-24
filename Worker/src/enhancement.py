@@ -51,8 +51,8 @@ except Exception as e:
     print(f"Real-ESRGAN Load Failed: {e}")
 
 # ──────────────────────────────────────────────────────────────────
-# 2. NAFNet — motion/defocus deblurring (document mode)
-# Architecture bundled in src/nafnet_arch.py — no external repo needed.
+# 2. NAFNet — motion/defocus deblurring
+# Architecture bundled in src/nafnet_arch.py
 # Weights: HuggingFace mirror of the official GoPro checkpoint.
 # ──────────────────────────────────────────────────────────────────
 NAFNET_URL  = ("https://huggingface.co/nyanko7/nafnet-models/resolve/main/"
