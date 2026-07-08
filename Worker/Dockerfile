@@ -13,10 +13,10 @@ WORKDIR /app
 
 # ── System dependencies ──────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3.11 \
-        python3.11-dev \
+        python3.14 \
+        python3.14-dev \
         python3-pip \
-        python3.11-venv \
+        python3.14-venv \
         libgl1-mesa-glx \
         libglib2.0-0 \
         libsm6 \
@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         curl \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 \
-    && update-alternatives --install /usr/bin/python  python  /usr/bin/python3.11 1
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 1 \
+    && update-alternatives --install /usr/bin/python  python  /usr/bin/python3.14 1
 
 RUN python -m pip install --index-url https://pypi.org/simple/ --upgrade pip
 
@@ -47,8 +47,8 @@ RUN pip install \
 # ── Patch basicsr / facexlib torchvision compatibility ───────────
 RUN sed -i \
     's/from torchvision.transforms.functional_tensor import rgb_to_grayscale/from torchvision.transforms.functional import rgb_to_grayscale/' \
-    /usr/local/lib/python3.11/dist-packages/basicsr/data/degradations.py && \
-    find /usr/local/lib/python3.11/dist-packages/facexlib \
+    /usr/local/lib/python3.14/dist-packages/basicsr/data/degradations.py && \
+    find /usr/local/lib/python3.14/dist-packages/facexlib \
          -name "*.py" \
          -exec sed -i \
          's/from torchvision.transforms.functional_tensor import rgb_to_grayscale/from torchvision.transforms.functional import rgb_to_grayscale/' \
