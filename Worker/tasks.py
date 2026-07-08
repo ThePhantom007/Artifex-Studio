@@ -1,7 +1,6 @@
 """
 ArtifexStudio — Celery Worker Task Definitions
-  • Loads celery_config via app.config_from_object() — v1 ignored the config
-    entirely and used hardcoded defaults.
+  • Loads celery_config via app.config_from_object()
   • bind=True on every task — tasks can now update their own state to STARTED
     and emit progress metadata the frontend can display.
   • cv2.imread null-guard — a missing or corrupt file returned None and was
