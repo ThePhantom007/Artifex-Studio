@@ -1,4 +1,6 @@
-const API_URL = `http://${window.location.hostname}:8000`;
+// API_URL comes from config.js (loaded before this file). Falls back to
+// localhost:8000 for local `docker compose up` development.
+const API_URL = window.ARTIFEX_API_URL || `http://${window.location.hostname}:8000`;
 
 const TASK_TIMEOUTS = {
   enhance: 5  * 60 * 1000,   // 5 min  — Real-ESRGAN
