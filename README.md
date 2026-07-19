@@ -10,8 +10,7 @@ Built as a personal project to work end-to-end through a production-shaped
 system: async APIs, background task processing, GPU inference, containerized
 services, and cloud deployment.
 
-**Live demo:** _add your deployed URL here once you've followed
-[`DEPLOYMENT.md`](./DEPLOYMENT.md)_
+**Live demo:** https://artifex-studio-mehul.vercel.app/
 
 #### ArtifexStudio Interface
 <img width="1918" height="995" alt="Screenshot 2026-03-05 224451" src="https://github.com/user-attachments/assets/5052ff30-a5ba-484a-8d00-3e7159ee36c7" />
