@@ -1,6 +1,12 @@
 """
 ArtifexStudio — Modal deployment
 
+Replaces the Celery + Redis + always-on-GPU-worker architecture with:
+  • 3 GPU functions (enhance, edit, style-transfer) that scale to zero
+  • 1 CPU function (stitch) — no GPU needed, matches the original code
+  • 1 lightweight FastAPI app, served by Modal as an ASGI app, that
+    replaces Backend/main.py's dispatch logic (Celery -> Modal spawn/poll)
+
 Deploy with:
     modal deploy modal_app/app.py
 
@@ -12,6 +18,7 @@ when you change worker/src/*.py or the pinned dependencies below.
 import io
 import time
 import uuid
+import shlex
 import mimetypes
 from pathlib import Path
 from typing import List, Optional
@@ -52,6 +59,46 @@ MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB, same as the original backend
 # ──────────────────────────────────────────────────────────────────
 # IMAGES
 # ──────────────────────────────────────────────────────────────────
+# basicsr (and, in some versions, facexlib) import
+# `torchvision.transforms.functional_tensor`, which newer torchvision
+# releases removed. This locates the installed package by its actual
+# import path (instead of blind-searching the filesystem)
+_TORCHVISION_COMPAT_PATCH = r'''
+import importlib.util, pathlib, sys
+
+OLD = "from torchvision.transforms.functional_tensor import rgb_to_grayscale"
+NEW = "from torchvision.transforms.functional import rgb_to_grayscale"
+
+def patch(module_name, relative_path=None, required=True):
+    spec = importlib.util.find_spec(module_name)
+    if not spec or not spec.submodule_search_locations:
+        if required:
+            sys.exit(f"ERROR: could not locate installed package '{module_name}'")
+        print(f"skip: '{module_name}' not installed")
+        return 0
+    root = pathlib.Path(list(spec.submodule_search_locations)[0])
+    targets = [root / relative_path] if relative_path else list(root.rglob("*.py"))
+    patched = 0
+    for target in targets:
+        if not target.is_file():
+            continue
+        text = target.read_text()
+        if OLD in text:
+            target.write_text(text.replace(OLD, NEW))
+            patched += 1
+            print(f"patched {target}")
+    return patched
+
+n = patch("basicsr", "data/degradations.py", required=True)
+if n == 0:
+    sys.exit(
+        "ERROR: expected torchvision.transforms.functional_tensor import not "
+        "found in basicsr/data/degradations.py -- basicsr's source changed, "
+        "update _TORCHVISION_COMPAT_PATCH in modal_app/app.py"
+    )
+patch("facexlib", required=False)  # best-effort: only some versions hit this
+'''
+
 # GPU image — mirrors Worker/Dockerfile + Worker/requirements.txt.
 # Uses stock pip torch wheels (no nvidia/cuda base image needed on Modal —
 # the pip CUDA wheels bundle their own runtime libs).
@@ -70,16 +117,7 @@ gpu_image = (
         "diffusers", "transformers", "accelerate", "safetensors", "scipy", "ftfy",
         "basicsr", "realesrgan", "simple-lama-inpainting", "timm", "kornia",
     )
-    .run_commands(
-        # Same basicsr/facexlib torchvision-compat patch as Worker/Dockerfile,
-        # located dynamically instead of a hardcoded python3.14 path.
-        "find / -path '*/basicsr/data/degradations.py' -exec sed -i "
-        "'s/from torchvision.transforms.functional_tensor import rgb_to_grayscale/"
-        "from torchvision.transforms.functional import rgb_to_grayscale/' {} + || true",
-        "find / -path '*/facexlib/*.py' -exec sed -i "
-        "'s/from torchvision.transforms.functional_tensor import rgb_to_grayscale/"
-        "from torchvision.transforms.functional import rgb_to_grayscale/' {} + || true",
-    )
+    .run_commands(f"python3 -c {shlex.quote(_TORCHVISION_COMPAT_PATCH)}")
     .env({
         "HF_HOME": f"{CACHE_PATH}/huggingface",
         "TORCH_HOME": f"{CACHE_PATH}/torch",
