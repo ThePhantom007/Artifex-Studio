@@ -73,9 +73,13 @@ gpu_image = (
         "libgl1", "libglib2.0-0", "libsm6", "libxext6", "libxrender1",
         "git", "curl",
     )
+    # Set before the pip installs below so pip never compiles a .pyc cache
+    # for basicsr/facexlib in the first place -- the patch step further
+    # down purges any that slip through anyway, but this is the real fix.
+    .env({"PYTHONDONTWRITEBYTECODE": "1"})
     .pip_install(
         "torch", "torchvision", "torchaudio",
-        index_url="https://download.pytorch.org/whl/cu121",
+        index_url="https://download.pytorch.org/whl/cu124",
     )
     .pip_install(
         "opencv-python-headless", "numpy<2.0", "pillow", "scikit-image",
