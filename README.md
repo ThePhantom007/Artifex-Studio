@@ -7,7 +7,7 @@ FastAPI gateway and a distributed task queue running real deep learning
 inference.
 
 Built as a personal project to work end-to-end through a production-shaped
-system: async APIs, background task processing, GPU inference, containerized
+system: async APIs, background task processing, GPU inference, containerised
 services, and cloud deployment.
 
 **Live demo:** [artifex-studio-mehul.vercel.app](https://artifex-studio-mehul.vercel.app/)
@@ -44,7 +44,7 @@ lost texture and detail at 4× native resolution using 23 residual blocks of
 deep learning inference.
 
 #### Crystal Clarity Demo
-<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/f97c80af-bba6-4fbd-8713-02d68f9a4283" />
+<img width="1917" height="995" alt="image" src="https://github.com/user-attachments/assets/84277759-3129-469c-bbd0-f474fc315c05" />
 
 ---
 
@@ -54,7 +54,7 @@ edges down to individual hair strands. LaMa reconstructs the background
 seamlessly as if the object never existed.
 
 #### Magic Eraser Demo
-<img width="1918" height="993" alt="image" src="https://github.com/user-attachments/assets/7eb52f41-4a3a-4eda-b62d-0b95d4c25d69" />
+<img width="1917" height="991" alt="image" src="https://github.com/user-attachments/assets/43159114-d6de-434d-929d-cdcb17fe040a" />
 
 ---
 
@@ -64,7 +64,7 @@ SDXL's cross-attention layers. Upload a photo and a painting — the AI repaints
 your scene in that style while preserving your original composition.
 
 #### Artistic Vision Demo
-<img width="1918" height="995" alt="image" src="https://github.com/user-attachments/assets/62de8d75-9f75-4439-9b15-b827265e8437" />
+<img width="1917" height="992" alt="image" src="https://github.com/user-attachments/assets/434708ac-8d6c-4783-962e-d96c46039fe8" />
 
 ---
 
@@ -75,7 +75,7 @@ seamless widescreen panoramas with automatic black-border cropping. Pure
 OpenCV — the one tool in the suite that runs on CPU by design, not GPU.
 
 #### Panoramic Stitching Demo
-<img width="1918" height="992" alt="image" src="https://github.com/user-attachments/assets/b0145e14-ab6e-4832-8be8-f89b16e995ea" />
+<img width="1917" height="992" alt="image" src="https://github.com/user-attachments/assets/63b632dc-f300-4ad7-812a-45bf6274bf9c" />
 
 ---
 
