@@ -23,7 +23,7 @@
     <button onclick="switchTab('enhance')" class="flex items-center gap-2 cursor-pointer bg-transparent border-none">
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
         <circle cx="13" cy="13" r="12" fill="url(#lg)"/>
-        <path d="M8 13l3.5 3.5L18 9" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13,5 C13.5,9 14,11.5 21,13 C14,14.5 13.5,17 13,21 C12.5,17 12,14.5 5,13 C12,11.5 12.5,9 13,5 Z" fill="white"/>
         <defs><linearGradient id="lg" x1="0" y1="0" x2="26" y2="26"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
       </svg>
       <span class="logo-mark">ArtifexStudio</span>
@@ -188,16 +188,16 @@
         <div class="divider-label">— Example Results —</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="glass-card">
-            <div class="grid grid-cols-2" style="height:220px">
-              <div class="overflow-hidden"><img src="assets/bg-removal-before.jpg" class="w-full h-full object-cover" alt="Photo with a busy background" /></div>
-              <div class="checkerboard overflow-hidden flex items-center justify-center"><img src="assets/bg-removal-after.png" class="w-full h-full object-cover" alt="Subject cleanly isolated" /></div>
+            <div class="grid grid-cols-2 crop-safe" style="height:220px">
+              <div class="overflow-hidden"><img src="assets/bg-removal-before.jpg" class="w-full h-full" alt="Photo with a busy background" /></div>
+              <div class="checkerboard overflow-hidden flex items-center justify-center"><img src="assets/bg-removal-after.png" class="w-full h-full" alt="Subject cleanly isolated" /></div>
             </div>
             <div class="example-caption flex justify-between"><span>✂️ Busy background → clean isolated subject</span><span class="text-blue-400">RMBG-2.0</span></div>
           </div>
           <div class="glass-card overflow-hidden">
-            <div class="grid grid-cols-2" style="height:220px">
-              <div class="overflow-hidden"><img src="assets/erase-before.png" class="w-full h-full object-cover" alt="Scene with a distracting object" /></div>
-              <div class="overflow-hidden"><img src="assets/erase-after.png" class="w-full h-full object-cover" alt="Scene reconstructed without it" /></div>
+            <div class="grid grid-cols-2 crop-safe" style="height:220px">
+              <div class="overflow-hidden"><img src="assets/erase-before.png" class="w-full h-full" alt="Scene with a distracting object" /></div>
+              <div class="overflow-hidden"><img src="assets/erase-after.png" class="w-full h-full" alt="Scene reconstructed without it" /></div>
             </div>
             <div class="example-caption flex justify-between"><span>🖌️ Object erased, background rebuilt</span><span class="text-blue-400">LaMa</span></div>
           </div>
@@ -297,25 +297,15 @@
             <div></div>
             <div class="style-col-label">AI Output</div>
           </div>
-          <!-- Example 1 -->
+          <!-- Real example -->
           <div class="style-row">
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80&auto=format&fit=crop&crop=faces" alt="Portrait"/></div>
+            <div class="style-img"><img src="assets/style-content.jpg" alt="Portrait"/></div>
             <div class="style-arrow">→</div>
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80&auto=format&fit=crop" alt="Abstract art"/></div>
+            <div class="style-img"><img src="assets/style-reference.jpg" alt="Abstract reference"/></div>
             <div class="style-arrow">→</div>
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80&auto=format&fit=crop" alt="Illustrative output style"/></div>
+            <div class="style-img"><img src="assets/style-result.png" alt="AI output"/></div>
           </div>
           <div class="text-center text-xs text-slate-600 -mt-3">Portrait content + abstract reference → painterly composition</div>
-          <div class="border-t" style="border-color:rgba(255,255,255,0.06)"></div>
-          <!-- Example 2 -->
-          <div class="style-row">
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&q=80&auto=format&fit=crop" alt="Forest"/></div>
-            <div class="style-arrow">→</div>
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&q=80&auto=format&fit=crop" alt="Watercolour"/></div>
-            <div class="style-arrow">→</div>
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1468581264429-2548ef9eb732?w=400&q=80&auto=format&fit=crop" alt="Painted landscape"/></div>
-          </div>
-          <div class="text-center text-xs text-slate-600 -mt-3">Forest scene + watercolour reference → hand-painted rendering</div>
         </div>
       </div>
 

@@ -324,11 +324,18 @@ body::before {
 .style-img {
   border-radius: 11px;
   overflow: hidden;
-  aspect-ratio: 4/3;
+  height: 210px;
+  background: #0b1220;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .style-img img {
-  width: 100%; height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
   transition: transform 0.4s ease;
 }
@@ -392,7 +399,7 @@ body::before {
 
 /* ─── ACTION CARD ───────────────────── */
 .action-card {
-  background: #eff6ff;
+  background: #dfeafc;
   border-radius: 26px;
   border: 1px solid #bfdbfe;
   box-shadow:
@@ -665,6 +672,11 @@ input[type="file"]::file-selector-button:hover {
   background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
   background-color: #f8fafc;
 }
+
+/* Letterboxes the full image instead of center-cropping it, so a wide
+   before/after pair never has its edited region cut off the side. */
+.crop-safe > div:not(.checkerboard) { background: #0b1220; }
+.crop-safe img { object-fit: contain; }
 
 /* ─── COMPARISON SLIDER ─────────────────────────────────────── */
 img-comparison-slider {
