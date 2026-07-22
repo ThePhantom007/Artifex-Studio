@@ -13,7 +13,7 @@ services, and cloud deployment.
 **Live demo:** [artifex-studio-mehul.vercel.app](https://artifex-studio-mehul.vercel.app/)
 
 #### ArtifexStudio Interface
-<img width="1918" height="995" alt="Screenshot 2026-03-05 224451" src="https://github.com/user-attachments/assets/5052ff30-a5ba-484a-8d00-3e7159ee36c7" />
+<img width="1916" height="995" alt="image" src="https://github.com/user-attachments/assets/ddc92d91-7fa1-4fec-a915-3157a7c2b462" />
 
 ---
 
