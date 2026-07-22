@@ -31,9 +31,9 @@
 
     <div class="flex items-center gap-1 overflow-x-auto">
       <button onclick="switchTab('enhance')" id="nav-enhance" class="nav-link active flex items-center gap-1.5"><span>🔬</span> Crystal Clarity</button>
-      <button onclick="switchTab('edit')"    id="nav-edit"    class="nav-link flex items-center gap-1.5"><span>✂️</span> Magic Eraser</button>
+      <button onclick="switchTab('edit')"    id="nav-edit"    class="nav-link flex items-center gap-1.5"><span><svg class="icon-eraser" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-25 10 10)"><rect x="4" y="6" width="12" height="8" rx="1.6" fill="#f472b6" stroke="#be185d" stroke-width="0.6"/><rect x="4" y="10.5" width="12" height="3.5" rx="1.4" fill="#fdf2f8"/></g></svg></span> Magic Eraser</button>
       <button onclick="switchTab('style')"   id="nav-style"   class="nav-link flex items-center gap-1.5"><span>🎨</span> Artistic Vision</button>
-      <button onclick="switchTab('stitch')"  id="nav-stitch"  class="nav-link flex items-center gap-1.5"><span>🌅</span> Deep Stitch</button>
+      <button onclick="switchTab('stitch')"  id="nav-stitch"  class="nav-link flex items-center gap-1.5"><span>🏞️</span> Panoramic Stitching</button>
     </div>
 
     <div class="rtx-badge hidden md:inline-flex"><div class="rtx-dot"></div>Live · Serverless GPU</div>
@@ -157,6 +157,53 @@
           </div>
         </div>
       </div>
+      <div class="mb-14 max-w-2xl mx-auto">
+        <div class="divider-label">— Frequently Asked Questions —</div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What does Crystal Clarity actually do?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>It uses Real-ESRGAN to upscale your image 4× while reconstructing fine detail lost to blur, compression, or low resolution — it's not just resizing.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What image formats are supported?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>JPG, PNG, and WebP, up to 50MB per file.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How long does processing take?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Typically a few seconds on a warm GPU. The first request after a period of inactivity can take up to a minute while the GPU spins up.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Will it fix very blurry or low-quality photos?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Yes, though results depend on how much real detail is left to reconstruct — extremely degraded images will improve but won't become studio-quality.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What resolution will my output be?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>4× your original image's width and height.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Is my image stored after processing?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Outputs are kept temporarily so you can download them, then automatically deleted after a few hours.</p></div>
+          </div>
+        </div>
+      </div>
     </section>
 
 
@@ -172,7 +219,7 @@
         </p>
         <div class="flex flex-wrap gap-2 justify-center">
           <span class="tech-pill">🎯 RMBG-2.0 Neural Matting</span>
-          <span class="tech-pill">🖌️ LaMa Background Reconstruction</span>
+          <span class="tech-pill"><svg class="icon-eraser" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-25 10 10)"><rect x="4" y="6" width="12" height="8" rx="1.6" fill="#f472b6" stroke="#be185d" stroke-width="0.6"/><rect x="4" y="10.5" width="12" height="3.5" rx="1.4" fill="#fdf2f8"/></g></svg> LaMa Background Reconstruction</span>
           <span class="tech-pill">💎 Hair & Fur Precision</span>
           <span class="tech-pill">🌐 RGBA Transparency Output</span>
         </div>
@@ -199,7 +246,7 @@
               <div class="overflow-hidden"><img src="assets/erase-before.png" class="w-full h-full" alt="Scene with a distracting object" /></div>
               <div class="overflow-hidden"><img src="assets/erase-after.png" class="w-full h-full" alt="Scene reconstructed without it" /></div>
             </div>
-            <div class="example-caption flex justify-between"><span>🖌️ Object erased, background rebuilt</span><span class="text-blue-400">LaMa</span></div>
+            <div class="example-caption flex justify-between"><span><svg class="icon-eraser" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-25 10 10)"><rect x="4" y="6" width="12" height="8" rx="1.6" fill="#f472b6" stroke="#be185d" stroke-width="0.6"/><rect x="4" y="10.5" width="12" height="3.5" rx="1.4" fill="#fdf2f8"/></g></svg> Object erased, background rebuilt</span><span class="text-blue-400">LaMa</span></div>
           </div>
         </div>
       </div>
@@ -227,7 +274,7 @@
             <label class="form-label">2. Choose an action</label>
             <select id="edit-action" class="styled-select" onchange="toggleMaskInput()">
               <option value="remove_bg">✂️ Extract Subject — Remove Background</option>
-              <option value="erase">🖌️ Generative Erase — Remove an Object</option>
+              <option value="erase">Generative Erase — Remove an Object</option>
             </select>
           </div>
           <div id="mask-container" class="hidden mb-5">
@@ -254,6 +301,46 @@
           <div class="flex gap-3 flex-wrap justify-center">
             <button onclick="resetEdit()" class="btn-ghost">↺ Edit Another</button>
             <button id="edit-download" class="btn-download">⬇ Download Result</button>
+          </div>
+        </div>
+      </div>
+      <div class="mb-14 max-w-2xl mx-auto">
+        <div class="divider-label">— Frequently Asked Questions —</div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What's the difference between the two actions?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>"Extract Subject" removes the background entirely and gives you a transparent PNG. "Generative Erase" removes one specific object and reconstructs what was behind it.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Do I need a mask for Generative Erase?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Yes — upload a mask image marking the area to remove. Background removal doesn't need one.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How clean are the edges around hair and fine detail?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>RMBG-2.0 handles fine edges like hair strands well, though very wispy or motion-blurred edges are harder for any model to get perfectly.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What format is the background-removal output?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>A transparent PNG (RGBA), so you can drop the subject onto any background.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can it handle multiple objects in one pass?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Generative Erase works best on one clearly-marked region at a time — run it again for additional objects.</p></div>
           </div>
         </div>
       </div>
@@ -361,13 +448,53 @@
           </div>
         </div>
       </div>
+      <div class="mb-14 max-w-2xl mx-auto">
+        <div class="divider-label">— Frequently Asked Questions —</div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What models power this?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Stable Diffusion XL with an IP-Adapter for style conditioning.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How closely will it match my style reference?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Style Scale (0.7 by default) controls the strength — higher values follow the reference more closely, at some cost to your original composition.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can I skip the style reference and just use a text prompt?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>No, a style reference image is required. The optional text prompt adds extra creative direction on top of it.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How long does a generation take?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>30 denoising steps typically finishes in under a minute on a warm GPU.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Will it preserve faces and identifiable details exactly?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Composition and structure are preserved, but SDXL reinterprets fine detail as part of the new style — this is a repaint, not a filter.</p></div>
+          </div>
+        </div>
+      </div>
     </section>
 
 
     <!-- ══ TAB 4: DEEP STITCH ══ -->
     <section id="sec-stitch" class="tab-content hidden">
       <div class="text-center mb-14">
-        <div class="section-eyebrow mx-auto w-fit mb-5"><span>🌅</span> OpenCV Panorama + Histogram Matching</div>
+        <div class="section-eyebrow mx-auto w-fit mb-5"><span>🏞️</span> OpenCV Panorama + Histogram Matching</div>
         <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl mb-5">Infinite<br><span class="gradient-span">Horizons</span></h1>
         <p class="hero-body mx-auto mb-8">
           SIFT feature detection finds thousands of matching keypoints across your frames,
@@ -394,30 +521,30 @@
         <div class="divider-label">— Panorama Example —</div>
         <div class="glass-card overflow-hidden mb-4">
           <img
-            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=90&auto=format&fit=crop&ar=3:1"
+            src="assets/panorama-result.png"
             class="w-full object-cover"
             style="height: 270px; object-position: center;"
             alt="Panoramic mountain landscape" />
           <div class="example-caption">
-            🌅 Multiple exposures merged · Histogram-matched · Auto-cropped · Zero visible seams
+            🏞️ Multiple exposures merged · Histogram-matched · Auto-cropped · Zero visible seams
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
           <div class="glass-card overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&q=70&auto=format&fit=crop"
+            <img src="assets/panorama-frame-1.png"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">What you upload</div>
+            <div class="example-caption">Frame 1</div>
           </div>
           <div class="glass-card overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=70&auto=format&fit=crop"
+            <img src="assets/panorama-frame-2.png"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">2+ overlapping shots</div>
+            <div class="example-caption">Frame 2 (overlapping)</div>
           </div>
           <div class="glass-card overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=300&q=70&auto=format&fit=crop"
+            <img src="assets/panorama-frame-3.png"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">Same viewpoint, panned</div>
+            <div class="example-caption">Frame 3</div>
           </div>
         </div>
         <p class="text-center text-xs text-slate-600 mt-3">
@@ -441,7 +568,7 @@
           <div class="dropzone mb-4">
             <input type="file" id="file-stitch" accept="image/*" multiple />
             <div class="dropzone-inner">
-              <div class="dropzone-icon">🌅</div>
+              <div class="dropzone-icon">🏞️</div>
               <div class="dropzone-title">Drop 2 or more overlapping photos</div>
               <div class="dropzone-sub mt-1">Hold Ctrl / ⌘ to select multiple files at once</div>
             </div>
@@ -461,6 +588,46 @@
           <div class="flex gap-3 flex-wrap justify-center">
             <button onclick="resetStitch()" class="btn-ghost">↺ Stitch Another</button>
             <button id="stitch-download" class="btn-download">⬇ Download Panorama</button>
+          </div>
+        </div>
+      </div>
+      <div class="mb-14 max-w-2xl mx-auto">
+        <div class="divider-label">— Frequently Asked Questions —</div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How many photos can I upload?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Two or more — there's no hard upper limit, but larger batches take longer to align.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Do the photos need to be in order?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>No, SIFT keypoint matching figures out the correct arrangement automatically.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What if stitching fails?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>That usually means insufficient overlap between frames — aim for 20–30% overlap between adjacent shots.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Will exposure differences between frames show up as seams?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>No — histogram matching normalizes exposure before blending, and multiband blending hides the transitions.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What about black borders in the result?</span>
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="faq-answer"><p>Handled automatically. The output is auto-cropped to remove them.</p></div>
           </div>
         </div>
       </div>

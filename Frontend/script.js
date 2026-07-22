@@ -287,6 +287,15 @@ function toggleMaskInput() {
   document.getElementById("mask-container").classList.toggle("hidden", action !== "erase");
 }
 
+function toggleFaq(btn) {
+  const item = btn.closest(".faq-item");
+  const wasOpen = item.classList.contains("open");
+  item.parentElement.querySelectorAll(".faq-item.open").forEach((el) => {
+    if (el !== item) el.classList.remove("open");
+  });
+  item.classList.toggle("open", !wasOpen);
+}
+
 function resetUI(tab) {
   document.getElementById(`ui-${tab}-result`)?.classList.add("hidden");
   document.getElementById(`ui-${tab}-loading`)?.classList.add("hidden");
@@ -390,7 +399,7 @@ async function submitStyle() {
   }
 }
 
-// ─── 4. Deep Stitch ───────────────────────────────────────────────
+// ─── 4. Panoramic Stitching ───────────────────────────────────────
 document.getElementById("file-stitch").addEventListener("change", async (e) => {
   const files = e.target.files;
   if (files.length < 2) {

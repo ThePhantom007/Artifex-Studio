@@ -207,6 +207,13 @@ body::before {
 }
 
 /* ─── TECH PILLS ────────────────────────────────────────────── */
+.icon-eraser {
+  width: 0.95em;
+  height: 0.95em;
+  display: inline-block;
+  vertical-align: -0.1em;
+  flex-shrink: 0;
+}
 .tech-pill {
   display: inline-flex;
   align-items: center;
@@ -281,6 +288,63 @@ body::before {
   flex: 1;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(37,99,235,0.22), transparent);
+}
+
+/* ─── FAQ ACCORDION ─────────────────────────────────────────── */
+.faq-list {
+  background: var(--card-glass);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.faq-item {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.faq-item:last-child {
+  border-bottom: none;
+}
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 1.05rem 1.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #cfe1f5;
+  transition: color 0.2s ease;
+}
+.faq-question:hover {
+  color: #93c5fd;
+}
+.faq-chevron {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: #3b82f6;
+  transition: transform 0.28s ease;
+}
+.faq-item.open .faq-chevron {
+  transform: rotate(180deg);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s ease;
+}
+.faq-answer p {
+  margin: 0 1.3rem 1.15rem;
+  font-size: 0.82rem;
+  line-height: 1.58;
+  color: #7c9ab8;
+}
+.faq-item.open .faq-answer {
+  max-height: 220px;
 }
 
 /* ─── GLASS CARDS (example showcase) ───────────────────────── */

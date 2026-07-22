@@ -91,7 +91,7 @@ the warm container and are fast.
 | FastAPI on a dedicated port | FastAPI served as a Modal ASGI app |
 | Redis + Celery task queue | `Function.spawn()` / `FunctionCall.get()` |
 | One GPU worker container, always on | 3 separate GPU functions, scale to zero |
-| Deep Stitch ran on the same GPU worker | Runs as its own CPU-only Modal function (matches the fact that `stitching.py` never used CUDA) |
+| Panoramic Stitching ran on the same GPU worker | Runs as its own CPU-only Modal function (matches the fact that `stitching.py` never used CUDA) |
 | `/data` named Docker volume | `artifex-data` Modal Volume |
 | `.cache/huggingface`, `.cache/torch` baked into the image | `artifex-model-cache` Modal Volume, mounted at `/cache` |
 

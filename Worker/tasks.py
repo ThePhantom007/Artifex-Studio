@@ -167,7 +167,7 @@ def task_enhance_image(self, filepath: str) -> dict:
         _cleanup_inputs(filepath)
 
 
-# ─── Task 2: Deep Stitch — Panoramic Stitching ───────────────────
+# ─── Task 2: Panoramic Stitching ───────────────────
 @celery_app.task(
     name="tasks.task_stitch_images",
     bind=True,

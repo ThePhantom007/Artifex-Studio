@@ -16,6 +16,7 @@ when you change worker/src/*.py or the pinned dependencies below.
 """
 
 import io
+import os
 import time
 import uuid
 import mimetypes
@@ -97,7 +98,7 @@ gpu_image = (
     .add_local_dir(str(WORKER_SRC), remote_path="/root/src")
 )
 
-# CPU image for Deep Stitch — no torch, no GPU. Matches the fact that
+# CPU image for Panoramic Stitching — no torch, no GPU. Matches the fact that
 # stitching.py is pure OpenCV/SIFT and never touches CUDA.
 cpu_image = (
     modal.Image.debian_slim(python_version="3.11")
@@ -217,7 +218,7 @@ def run_style_transfer(content_bytes: bytes, style_bytes: bytes, prompt: str = "
 
 
 # ──────────────────────────────────────────────────────────────────
-# CPU FUNCTION — Deep Stitch (OpenCV, no GPU — matches the original code)
+# CPU FUNCTION — Panoramic Stitching (OpenCV, no GPU — matches the original code)
 # ──────────────────────────────────────────────────────────────────
 @app.function(
     image=cpu_image,

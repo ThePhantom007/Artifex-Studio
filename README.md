@@ -68,13 +68,13 @@ your scene in that style while preserving your original composition.
 
 ---
 
-### 🌅 Deep Stitch — Panoramic Stitching
+### 🏞️ Panoramic Stitching
 SIFT keypoint detection, homography warping, histogram exposure matching, and
 multiband seam blending — fused into a single drag-and-drop tool that produces
 seamless widescreen panoramas with automatic black-border cropping. Pure
 OpenCV — the one tool in the suite that runs on CPU by design, not GPU.
 
-#### Deep Stitch Demo
+#### Panoramic Stitching Demo
 <img width="1918" height="992" alt="image" src="https://github.com/user-attachments/assets/b0145e14-ab6e-4832-8be8-f89b16e995ea" />
 
 ---
@@ -84,7 +84,7 @@ OpenCV — the one tool in the suite that runs on CPU by design, not GPU.
 | **Crystal Clarity** | Real-ESRGAN x4plus | GPU | 4× upscaling and restoration |
 | **Magic Eraser** | RMBG-2.0 + LaMa | GPU | Background removal and object erase |
 | **Artistic Vision** | SDXL + IP-Adapter | GPU | Reference-guided style transfer |
-| **Deep Stitch** | OpenCV + histogram matching | CPU | Seamless panorama stitching |
+| **Panoramic Stitching** | OpenCV + histogram matching | CPU | Seamless panorama stitching |
 
 ---
 
@@ -152,10 +152,10 @@ Browser → Vercel (static frontend)
               │
               ▼
         Modal app
-   ┌────────────────────┬──────────────┬─────────────────────┐
-   │   Backend API      │  Deep Stitch │   3 GPU functions   │
-   │   (FastAPI, ASGI)  │  (CPU only)  │   (scale to zero)   │
-   └────────────────────┴──────────────┴─────────────────────┘
+   ┌───────────────────┬───────────────────────┬───────────────────┐
+   │    Backend API    │  Panoramic Stitching  │  3 GPU functions  │
+   │  (FastAPI, ASGI)  │      (CPU only)       │  (scale to zero)  │
+   └───────────────────┴───────────────────────┴───────────────────┘
 ```
 No Redis, no always-on GPU — each AI tool is its own Modal function that
 spins up on demand and back down to zero cost when idle. Details, cost
@@ -229,7 +229,7 @@ deploys the same four tools as serverless GPU functions on
 
 - Frontend stays up permanently, at no cost
 - GPU functions scale to zero when nobody's using them, and spin up on demand
-- Deep Stitch runs as a plain CPU function, since it never needed a GPU in
+- Panoramic Stitching runs as a plain CPU function, since it never needed a GPU in
   the first place
 
 Full step-by-step instructions, cost notes, and a troubleshooting guide live
