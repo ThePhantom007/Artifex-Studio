@@ -200,10 +200,6 @@ Get a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/
 (Read access is sufficient). You must also accept the RMBG-2.0 model license at
 [huggingface.co/briaai/RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0).
 
-`.env` is already in `.gitignore` — keep it that way, and treat any token
-that ever sat in an unversioned copy of this repo (a zip, a shared drive,
-etc.) as exposed and worth rotating.
-
 ### 3. Build and start
 ```bash
 docker compose up -d --build
