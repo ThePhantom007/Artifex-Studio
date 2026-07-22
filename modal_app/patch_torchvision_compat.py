@@ -3,14 +3,25 @@ Patches the torchvision.transforms.functional_tensor -> functional_tensor
 import that basicsr (and, in some versions, facexlib) still use, which
 newer torchvision releases removed.
 
-Run at image-build time only (see modal_app/app.py).
+Also purges any __pycache__ directories under the patched packages. `pip
+install` compiles .pyc bytecode at install time; without this step, Python
+can keep executing the *pre-patch* bytecode even after the .py source has
+been correctly rewritten, since some pip/compileall configurations cache
+with the "unchecked hash" invalidation mode that skips the normal
+source-vs-cache staleness check.
 """
 import importlib.util
 import pathlib
+import shutil
 import sys
 
 OLD = "from torchvision.transforms.functional_tensor import rgb_to_grayscale"
 NEW = "from torchvision.transforms.functional import rgb_to_grayscale"
+
+
+def _purge_pycache(root: pathlib.Path) -> None:
+    for cache_dir in root.rglob("__pycache__"):
+        shutil.rmtree(cache_dir, ignore_errors=True)
 
 
 def patch(module_name: str, relative_path: str | None = None, required: bool = True) -> int:
@@ -33,6 +44,11 @@ def patch(module_name: str, relative_path: str | None = None, required: bool = T
             target.write_text(text.replace(OLD, NEW))
             patched += 1
             print(f"patched {target}")
+
+    if patched:
+        _purge_pycache(root)
+        print(f"purged __pycache__ under {root}")
+
     return patched
 
 

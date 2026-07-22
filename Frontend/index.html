@@ -36,7 +36,7 @@
       <button onclick="switchTab('stitch')"  id="nav-stitch"  class="nav-link flex items-center gap-1.5"><span>🌅</span> Deep Stitch</button>
     </div>
 
-    <div class="rtx-badge hidden md:inline-flex"><div class="rtx-dot"></div>RTX 5060 Live</div>
+    <div class="rtx-badge hidden md:inline-flex"><div class="rtx-dot"></div>Live · Serverless GPU</div>
   </nav>
 
   <main class="page-main flex-grow w-full max-w-5xl mx-auto px-5 pt-14 pb-24">
@@ -109,7 +109,7 @@
         <div id="ui-enhance-loading" class="hidden flex-col items-center py-12 text-center">
           <div class="spinner-wrap"><div class="spinner-track"></div><div class="spinner-arc"></div><div class="spinner-arc spinner-arc-2"></div><div class="spinner-icon">✨</div></div>
           <h3 class="text-xl font-bold text-slate-700">Reconstructing Pixels…</h3>
-          <p class="text-slate-400 text-sm mt-1">Real-ESRGAN is running inference on your RTX 5060.</p>
+          <p class="text-slate-400 text-sm mt-1">Real-ESRGAN is running inference on a cloud GPU.</p>
           <p id="enhance-loading-msg" class="loading-msg"></p>
         </div>
 
@@ -189,18 +189,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="glass-card">
             <div class="grid grid-cols-2" style="height:220px">
-              <div class="overflow-hidden"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80&auto=format&fit=crop" class="w-full h-full object-cover" alt="Before" /></div>
-              <div class="checkerboard overflow-hidden flex items-center justify-center"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=90&auto=format&fit=crop" class="w-full h-full object-cover" style="mix-blend-mode:multiply;opacity:0.9" alt="After" /></div>
+              <div class="overflow-hidden"><img src="assets/bg-removal-before.jpg" class="w-full h-full object-cover" alt="Photo with a busy background" /></div>
+              <div class="checkerboard overflow-hidden flex items-center justify-center"><img src="assets/bg-removal-after.png" class="w-full h-full object-cover" alt="Subject cleanly isolated" /></div>
             </div>
-            <div class="example-caption flex justify-between"><span>✂️ Background Removal · RMBG-2.0</span><span class="text-blue-400">Before → After</span></div>
+            <div class="example-caption flex justify-between"><span>✂️ Busy background → clean isolated subject</span><span class="text-blue-400">RMBG-2.0</span></div>
           </div>
           <div class="glass-card overflow-hidden">
-            <img-comparison-slider class="w-full focus:outline-none cursor-ew-resize" style="height:220px;display:block">
-              <img slot="first"  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=80&auto=format&fit=crop" style="width:100%;height:220px;object-fit:cover" />
-              <img slot="second" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=90&auto=format&fit=crop" style="width:100%;height:220px;object-fit:cover;filter:brightness(1.04) saturate(0.9)" />
-              <div slot="handle" class="slider-handle" style="transform:scale(0.78)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M8 9l4-4 4 4M8 15l4 4 4-4" transform="rotate(90 12 12)"/></svg></div>
-            </img-comparison-slider>
-            <div class="example-caption flex justify-between"><span>🖌️ Generative Erase · LaMa</span><span class="text-blue-400">Drag to compare</span></div>
+            <div class="grid grid-cols-2" style="height:220px">
+              <div class="overflow-hidden"><img src="assets/erase-before.png" class="w-full h-full object-cover" alt="Scene with a distracting object" /></div>
+              <div class="overflow-hidden"><img src="assets/erase-after.png" class="w-full h-full object-cover" alt="Scene reconstructed without it" /></div>
+            </div>
+            <div class="example-caption flex justify-between"><span>🖌️ Object erased, background rebuilt</span><span class="text-blue-400">LaMa</span></div>
           </div>
         </div>
       </div>
@@ -304,7 +303,7 @@
             <div class="style-arrow">→</div>
             <div class="style-img"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80&auto=format&fit=crop" alt="Abstract art"/></div>
             <div class="style-arrow">→</div>
-            <div class="style-img"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80&auto=format&fit=crop" alt="Result"/></div>
+            <div class="style-img"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80&auto=format&fit=crop" alt="Illustrative output style"/></div>
           </div>
           <div class="text-center text-xs text-slate-600 -mt-3">Portrait content + abstract reference → painterly composition</div>
           <div class="border-t" style="border-color:rgba(255,255,255,0.06)"></div>
@@ -418,17 +417,17 @@
           <div class="glass-card overflow-hidden">
             <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&q=70&auto=format&fit=crop"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">Frame 1</div>
+            <div class="example-caption">What you upload</div>
           </div>
           <div class="glass-card overflow-hidden">
             <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=70&auto=format&fit=crop"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">Frame 2 (overlapping)</div>
+            <div class="example-caption">2+ overlapping shots</div>
           </div>
           <div class="glass-card overflow-hidden">
             <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=300&q=70&auto=format&fit=crop"
               class="w-full object-cover" style="height:90px" />
-            <div class="example-caption">Frame 3</div>
+            <div class="example-caption">Same viewpoint, panned</div>
           </div>
         </div>
         <p class="text-center text-xs text-slate-600 mt-3">
@@ -482,7 +481,7 @@
   <footer class="site-footer py-8 px-6 text-center">
     <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
       <div class="footer-logo">ArtifexStudio</div>
-      <p class="text-xs opacity-60">Real-ESRGAN · RMBG-2.0 · LaMa · SDXL IP-Adapter · OpenCV · RTX 5060 Blackwell</p>
+      <p class="text-xs opacity-60">Real-ESRGAN · RMBG-2.0 · LaMa · SDXL IP-Adapter · OpenCV · Serverless GPU</p>
       <p class="text-xs opacity-40">© 2026 Artifex Studio</p>
     </div>
   </footer>

@@ -10,7 +10,7 @@ Built as a personal project to work end-to-end through a production-shaped
 system: async APIs, background task processing, GPU inference, containerized
 services, and cloud deployment.
 
-**Live demo:** https://artifex-studio-mehul.vercel.app/
+**Live demo:** [artifex-studio-mehul.vercel.app](https://artifex-studio-mehul.vercel.app/)
 
 #### ArtifexStudio Interface
 <img width="1918" height="995" alt="Screenshot 2026-03-05 224451" src="https://github.com/user-attachments/assets/5052ff30-a5ba-484a-8d00-3e7159ee36c7" />
@@ -167,7 +167,6 @@ notes, and setup commands in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
 ### Hardware
 - NVIDIA GPU with at least 6 GB VRAM (8 GB recommended for SDXL style transfer)
-- Tested on RTX 5060 Laptop GPU (Blackwell, 8 GB)
 
 ### Software
 - Windows 11 with WSL2 enabled, or Linux
@@ -454,7 +453,7 @@ All variables are set in `.env`. Copy `.env.example` as a starting point.
 - **[IP-Adapter](https://github.com/tencent-ailab/IP-Adapter)** — style transfer via cross-attention
 - **[OpenCV](https://opencv.org/)** — panoramic stitching
 - **[Nginx](https://nginx.org/)** — static frontend server (local deployment)
-- **[PyTorch](https://pytorch.org/)** 2.6+ with CUDA 12.8
+- **[PyTorch](https://pytorch.org/)** — CUDA-enabled; exact version pinned per deployment target (`Worker/Dockerfile` for local, `modal_app/app.py` for the cloud deployment)
 
 ---
 
